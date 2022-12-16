@@ -25,8 +25,9 @@ Bunny for scale.
  - Fusion 360 for Parts Design
 
 # Easily add new devices to control
-
-<div style="height: 0; padding-bottom: calc(72.58%); position:relative; width: 100%;"><iframe allow="autoplay; gyroscope;" allowfullscreen height="100%" referrerpolicy="strict-origin" src="https://www.kapwing.com/e/639cfe30f86d6b0061ecdcae" style="border:0; height:100%; left:0; overflow:hidden; position:absolute; top:0; width:100%" title="Embedded content made on Kapwing" width="100%"></iframe></div><p style="font-size: 12px; text-align: right;">Video edited on <a href="https://www.kapwing.com/video-editor">Kapwing</a></p>
+<p align="center">
+    <img  src="./docs/add_new_device_demo.gif" width="75%" />
+</p>
 
 # Live connection via Websockets
 The set custom color page allows for changing the colors with the sliders and seeing
