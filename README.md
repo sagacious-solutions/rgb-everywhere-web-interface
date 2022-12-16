@@ -1,6 +1,6 @@
 # RGB Everywhere - Web Interface
 
-RGB Everywhere has spawned from <a href="https://github.com/sagacious-solutions/react-christmas-tree">React christmas tree </a> which started as a way to control my christmas tree lights. Now it has grown to support multiple display devices at a time. Add new devices is easy and the more you add, the sooner you'll have RGB Everywhere!
+RGB Everywhere has spawned from <a href="https://github.com/sagacious-solutions/react-christmas-tree">React christmas tree </a> which started as a way to control my christmas tree lights. Now it has grown to support multiple display devices at a time. Adding new devices is easy and the more you add, the sooner you'll have RGB Everywhere!
 
 See repo <a href="https://github.com/sagacious-solutions/raspberry-xmas-tree">raspberry-xmas-tree</a> for hardware API.
 See repo <a href="https://github.com/sagacious-solutions/rgb-everywhere-db">rgb-everywhere-db</a> for database.
@@ -23,6 +23,12 @@ Bunny for scale.
  - 2 Raspberry Pi Zero 2's
  - Ender 3 Pro V2 for Printing Screen Mount
  - Fusion 360 for Parts Design
+
+# Easily add new devices to control
+
+<iframe width="420" height="315"
+src="https://www.youtube.com/watch?v=sWbMw03Q6aw">
+</iframe>
 
 # Live connection via Websockets
 The set custom color page allows for changing the colors with the sliders and seeing
