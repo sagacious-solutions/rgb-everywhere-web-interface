@@ -26,9 +26,7 @@ Bunny for scale.
 
 # Easily add new devices to control
 
-<iframe width="420" height="315"
-src="https://www.youtube.com/watch?v=sWbMw03Q6aw">
-</iframe>
+<div style="height: 0; padding-bottom: calc(72.58%); position:relative; width: 100%;"><iframe allow="autoplay; gyroscope;" allowfullscreen height="100%" referrerpolicy="strict-origin" src="https://www.kapwing.com/e/639cfe30f86d6b0061ecdcae" style="border:0; height:100%; left:0; overflow:hidden; position:absolute; top:0; width:100%" title="Embedded content made on Kapwing" width="100%"></iframe></div><p style="font-size: 12px; text-align: right;">Video edited on <a href="https://www.kapwing.com/video-editor">Kapwing</a></p>
 
 # Live connection via Websockets
 The set custom color page allows for changing the colors with the sliders and seeing
