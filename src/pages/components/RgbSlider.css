@@ -1,0 +1,8 @@
+.sliderGroup {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    margin-top: 10%;
+    margin-left: 20%;
+    margin-right: 20%;
+}
