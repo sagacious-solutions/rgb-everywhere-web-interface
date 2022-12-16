@@ -1,10 +1,9 @@
-# react-christmas-tree
+# RGB Everywhere - Web Interface
 
-React christmas tree is the peak of holiday cheer inducing technology. Featuring a 
-7 Inch LCD Touch screen and a genuine Douglas Fir tree, you can't escape the Christmas 
-spirit of this project.
+RGB Everywhere has spawned from <a href="https://github.com/sagacious-solutions/react-christmas-tree">React christmas tree </a> which started as a way to control my christmas tree lights. Now it has grown to support multiple display devices at a time. Adding new devices is easy and the more you add, the sooner you'll have RGB Everywhere!
 
 See repo <a href="https://github.com/sagacious-solutions/raspberry-xmas-tree">raspberry-xmas-tree</a> for hardware API.
+See repo <a href="https://github.com/sagacious-solutions/rgb-everywhere-db">rgb-everywhere-db</a> for database.
 
 <img src="./docs/holiday_spirit_tree.jpg" width="30%" />
 
@@ -17,9 +16,18 @@ Bunny for scale.
  - React JS
  - Socket.io
  - Material UI
- - Sequelize
+ - SQLAlchemy
+ - Flask
+ - Windows Subsystem for Linux
+ - Raspberry Pi 4
+ - 2 Raspberry Pi Zero 2's
  - Ender 3 Pro V2 for Printing Screen Mount
  - Fusion 360 for Parts Design
+
+# Easily add new devices to control
+<p align="center">
+    <img  src="./docs/add_new_device_demo.gif" width="75%" />
+</p>
 
 # Live connection via Websockets
 The set custom color page allows for changing the colors with the sliders and seeing
