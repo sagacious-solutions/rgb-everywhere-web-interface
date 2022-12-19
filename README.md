@@ -2,7 +2,7 @@
 
 RGB Everywhere has spawned from <a href="https://github.com/sagacious-solutions/react-christmas-tree">React christmas tree </a> which started as a way to control my christmas tree lights. Now it has grown to support multiple display devices at a time. Adding new devices is easy and the more you add, the sooner you'll have RGB Everywhere!
 
-See repo <a href="https://github.com/sagacious-solutions/rgb-everywhere-hardware-api">RGB Everywhere hardware API</a>.<br>
+See repo <a href="https://github.com/sagacious-solutions/rgb-everywhere-hardware-api">rgb-everywhere-hardware-api</a> for lighting device code.<br>
 See repo <a href="https://github.com/sagacious-solutions/rgb-everywhere-db">rgb-everywhere-db</a> for database.
 
 <img src="./docs/holiday_spirit_tree.jpg" width="30%" />
