@@ -3,6 +3,8 @@ import TextField from "@mui/material/TextField";
 import Popup from "reactjs-popup";
 import BasicButton from "./BasicButton";
 import useServerCommunication from "../../serverCommunication";
+import { Box } from "@mui/system";
+import RGBTestButtonGroup from "./RGBTestButtonGroup";
 
 function isRgbValueValid(value) {
     const validRGBValues = ["rgb"];
@@ -10,12 +12,14 @@ function isRgbValueValid(value) {
 }
 
 export default function AddNewDevicePopup(props) {
-    const { sayHello, postNewDevice } = useServerCommunication();
+    const { sayHello, postNewDevice, postDeviceConfig, postColorRequest } =
+        useServerCommunication();
     const [state, setState] = useState({
         name: "",
         description: "",
         ip_address: "192.168.x.x",
         color_mode: "rgb",
+        pixel_count: 50,
         rgbValid: true,
         canConnect: false,
     });
@@ -34,7 +38,7 @@ export default function AddNewDevicePopup(props) {
     return (
         <Popup open={props.open} defaultOpen={false}>
             <div>
-                <h3>Add new device</h3>
+                <h3 style={{ marginLeft: "5%" }}>Add new device</h3>
                 <div style={fieldGroupStyle}>
                     <TextField
                         style={defaultFieldStyle}
@@ -75,23 +79,46 @@ export default function AddNewDevicePopup(props) {
                             });
                         }}
                     />
-                    <TextField
-                        style={defaultFieldStyle}
-                        required
-                        id="deviceIP"
-                        label="Color Mode"
-                        value={state.color_mode}
-                        color={state.rgbValid ? null : "warning"}
-                        onChange={(event) => {
-                            setState({
-                                ...state,
-                                color_mode: event.target.value,
-                                rgbValid: isRgbValueValid(event.target.value),
-                            });
+                    <div
+                        style={{
+                            display: "flex",
+                            justifyContent: "space-evenly",
                         }}
-                    />
+                    >
+                        <TextField
+                            style={defaultFieldStyle}
+                            required
+                            id="colorMode"
+                            label="Color Order"
+                            value={state.color_mode}
+                            color={state.rgbValid ? null : "warning"}
+                            onChange={(event) => {
+                                setState({
+                                    ...state,
+                                    color_mode: event.target.value,
+                                    rgbValid: isRgbValueValid(
+                                        event.target.value
+                                    ),
+                                });
+                            }}
+                        />
+                        <TextField
+                            style={defaultFieldStyle}
+                            required
+                            id="pixelCount"
+                            label="Pixel Count"
+                            value={state.pixel_count}
+                            onChange={(event) => {
+                                setState({
+                                    ...state,
+                                    pixel_count: event.target.value,
+                                });
+                            }}
+                        />
+                        {/* <Box sx={{ flexGrow: 0.1 }} /> */}
+                    </div>
                 </div>
-                <div style={{ display: "flex" }}>
+                <div style={{ display: "flex", marginTop: "2%" }}>
                     <BasicButton
                         buttonText="Check Device Communication"
                         style={{
@@ -105,6 +132,29 @@ export default function AddNewDevicePopup(props) {
                                 .catch((err) => console.log(err));
                         }}
                     />
+                    <BasicButton
+                        buttonText="Set device config"
+                        disabled={true}
+                        style={{
+                            background: state.canConnect ? "blue" : "red",
+                            marginLeft: "1%",
+                        }}
+                        onClick={() => {
+                            if (state.canConnect)
+                                postDeviceConfig(
+                                    state.ip_address,
+                                    state.color_mode,
+                                    state.pixel_count
+                                )
+                                    .then((res) => {
+                                        console.log(res);
+                                    })
+                                    .catch((res) => {
+                                        console.log(res);
+                                    });
+                        }}
+                    />
+                    <Box sx={{ flexGrow: 1 }} />
                     <BasicButton
                         buttonText="Add New Device"
                         disabled={true}
@@ -124,6 +174,11 @@ export default function AddNewDevicePopup(props) {
                                     })
                                     .catch(() => {});
                         }}
+                    />
+                    <RGBTestButtonGroup
+                        postColorRequest={postColorRequest}
+                        ip_address={state.ip_address}
+                        disabled={state.canConnect}
                     />
                 </div>
             </div>

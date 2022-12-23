@@ -13,6 +13,12 @@ export default function useServerCommunication() {
     function postNewDevice(device) {
         return axios.post(DB_URL + "/putNewDevice/", { device });
     }
+    function postDeviceConfig(ip, color_mode, led_count) {
+        return axios.post("http://" + ip + ":5000/configDevice/", {
+            color_mode: color_mode,
+            led_count: led_count,
+        });
+    }
 
     function postSetSolidPreset(color, device) {
         axios
@@ -25,7 +31,7 @@ export default function useServerCommunication() {
     }
 
     function postColorRequest(color, device) {
-        axios
+        return axios
             .post(`http://${device}:5000/setRgbColor/`, {
                 color: color,
             })
@@ -71,5 +77,6 @@ export default function useServerCommunication() {
         getDeviceList,
         postNewDevice,
         sayHello,
+        postDeviceConfig,
     };
 }
