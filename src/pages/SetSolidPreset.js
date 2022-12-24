@@ -43,14 +43,14 @@ const buttonDetails = [
         colorName: "red",
     },
     {
-        backgroundColor: "Blue",
-        buttonText: "Blue",
-        colorName: "blue",
-    },
-    {
         backgroundColor: "Green",
         buttonText: "Green",
         colorName: "green",
+    },
+    {
+        backgroundColor: "Blue",
+        buttonText: "Blue",
+        colorName: "blue",
     },
     {
         backgroundColor: "rgb(50, 26, 94)",

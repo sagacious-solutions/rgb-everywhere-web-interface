@@ -14,7 +14,6 @@ function SelectAnimation(props) {
                     <PatternButton
                         buttonText="Rainbow Cycle"
                         onClick={() => {
-                            console.log(props);
                             postAninmationRequest(
                                 "rainbowCycle",
                                 props.currentDevice
