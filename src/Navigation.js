@@ -136,7 +136,6 @@ export default function Navigation() {
             getDeviceList().then((res) => {
                 setDevices(DictToDeviceList(res.data));
             });
-            appState.currentDevice = appState.devices[0];
         }
     }, [newDevicePopupOpen]);
 

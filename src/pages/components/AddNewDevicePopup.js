@@ -73,7 +73,7 @@ export default function AddNewDevicePopup(props) {
                 addOrUpdateFn: postUpdateDevice,
             });
         }
-    }, [props.modifyExisting]);
+    }, [props.modifyExisting, props.open]);
 
     return (
         <Popup
@@ -203,7 +203,7 @@ export default function AddNewDevicePopup(props) {
                                 description: state.description,
                                 ip_address: state.ip_address,
                                 color_mode: state.color_order,
-                            }).then(props.closePopup);
+                            }).then(() => props.closePopup());
                         }}
                     >
                         Delete Device
