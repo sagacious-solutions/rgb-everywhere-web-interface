@@ -10,6 +10,7 @@ import CssBaseline from "@material-ui/core/CssBaseline";
 import Typography from "@material-ui/core/Typography";
 import Divider from "@material-ui/core/Divider";
 import IconButton from "@material-ui/core/IconButton";
+import SettingsIcon from "@mui/icons-material/Settings";
 import MenuIcon from "@material-ui/icons/Menu";
 import ChevronLeftIcon from "@material-ui/icons/ChevronLeft";
 import ChevronRightIcon from "@material-ui/icons/ChevronRight";
@@ -20,7 +21,7 @@ import Palette from "@material-ui/icons/Palette";
 import TextureIcon from "@mui/icons-material/Texture";
 import TuneIcon from "@mui/icons-material/Tune";
 import TrafficIcon from "@material-ui/icons/Traffic";
-import PatternButton from "./pages/components/PatternButton";
+import Button from "@mui/material/Button";
 import Dropdown from "react-dropdown";
 import "react-dropdown/style.css";
 import "reactjs-popup/dist/index.css";
@@ -33,7 +34,6 @@ import CustomPattern from "./pages/CustomPattern";
 
 import { DictToDeviceList } from "./DisplayDevice";
 import useServerCommunication from "./serverCommunication";
-
 import useApplicationData from "./hooks/useApplicationData";
 const drawerWidth = 240;
 
@@ -41,6 +41,7 @@ const useStyles = makeStyles((theme) => ({
     root: {
         display: "flex",
     },
+    dropDown: { width: "25%" },
     appBar: {
         zIndex: theme.zIndex.drawer + 1,
         transition: theme.transitions.create(["width", "margin"], {
@@ -108,6 +109,8 @@ export default function Navigation() {
     const [page, setPage] = React.useState("animation");
     const [newDevicePopupOpen, setNewDevicePopupOpen] = React.useState(false);
     const { getDeviceList } = useServerCommunication();
+    const [modifyExisting, setModifyExisting] = React.useState(false);
+    const ADD_NEW_DEVICE_OPTION = "Add New Device..";
 
     const pages = {
         animation: <SelectAnimation currentDevice={appState.currentDevice} />,
@@ -129,11 +132,12 @@ export default function Navigation() {
     };
 
     useEffect(() => {
-        getDeviceList()
-            .then((res) => {
+        if (!newDevicePopupOpen) {
+            getDeviceList().then((res) => {
                 setDevices(DictToDeviceList(res.data));
-            })
-            .catch((_err) => {});
+            });
+            appState.currentDevice = appState.devices[0];
+        }
     }, [newDevicePopupOpen]);
 
     useEffect(() => {
@@ -143,6 +147,7 @@ export default function Navigation() {
                 label: `${d.name} - ${d.ip_address}`,
             };
         });
+        deviceOptions.push(ADD_NEW_DEVICE_OPTION);
         setDropdownList(deviceOptions);
         if (dropdownList.length) {
             setCurrentDevice(dropdownList[0].value);
@@ -152,10 +157,16 @@ export default function Navigation() {
     let dropdown =
         appState.devices.length > 0 ? (
             <Dropdown
-                style={{ width: "10%" }}
+                className={classes.dropDown}
                 options={dropdownList}
                 value={appState.currentDevice}
                 onChange={(dropValue) => {
+                    if (dropValue.value == ADD_NEW_DEVICE_OPTION) {
+                        setModifyExisting(false);
+                        setNewDevicePopupOpen(true);
+                        dropValue.value = "";
+                        return;
+                    }
                     setCurrentDevice(dropValue.value);
                 }}
                 placeholder="Select a Device"
@@ -195,15 +206,25 @@ export default function Navigation() {
                     <Box sx={{ flexGrow: 0.025 }} />
                     {dropdown}
                     <AddNewDevicePopup
+                        modifyExisting={modifyExisting}
+                        currentDevice={appState.currentDevice}
+                        devices={appState.devices}
                         open={newDevicePopupOpen}
                         closePopup={() => setNewDevicePopupOpen(false)}
                     />
-                    <PatternButton
-                        buttonText="Add New Device"
-                        onClick={() =>
-                            setNewDevicePopupOpen(!newDevicePopupOpen)
-                        }
-                    />
+                    <Button
+                        sx={{
+                            marginLeft: "1%",
+                            background: "Green",
+                            color: "white",
+                        }}
+                        onClick={() => {
+                            if (appState.currentDevice) setModifyExisting(true);
+                            setNewDevicePopupOpen(!newDevicePopupOpen);
+                        }}
+                    >
+                        <SettingsIcon />
+                    </Button>
                 </Toolbar>
             </AppBar>
             <Drawer

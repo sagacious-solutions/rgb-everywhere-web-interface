@@ -17,7 +17,7 @@ export default function RGBTestButtonGroup(props) {
                 borderRadius: "10px",
             }}
         >
-            <legend>Test Color Mode</legend>
+            <legend>Test Color Order</legend>
             <ButtonGroup style={{ marginBottom: "3%" }} variant="contained">
                 <Button
                     disabled={!props.disabled}

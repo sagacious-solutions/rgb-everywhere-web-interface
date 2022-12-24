@@ -13,6 +13,13 @@ export default function useServerCommunication() {
     function postNewDevice(device) {
         return axios.post(DB_URL + "/putNewDevice/", { device });
     }
+    function postUpdateDevice(device) {
+        return axios.post(DB_URL + "/updateDevice/", { device });
+    }
+    function postDeleteDevice(device) {
+        return axios.post(DB_URL + "/deleteDevice/", { device });
+    }
+
     function postDeviceConfig(ip, color_mode, led_count) {
         return axios.post("http://" + ip + ":5000/configDevice/", {
             color_mode: color_mode,
@@ -76,6 +83,8 @@ export default function useServerCommunication() {
         postTurnOffRequest,
         getDeviceList,
         postNewDevice,
+        postUpdateDevice,
+        postDeleteDevice,
         sayHello,
         postDeviceConfig,
     };
