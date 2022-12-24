@@ -57,7 +57,7 @@ Although the tree can be controlled from any local web browser, the project feat
 <br>
 
 # Database ERD
-<img src="./docs/erd_devices.png" width="49%" />
+<img src="./docs/db_erd.png" width="49%" />
 
 # Setup
 
