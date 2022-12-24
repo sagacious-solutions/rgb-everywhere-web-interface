@@ -15,6 +15,7 @@ Bunny for scale.
  - CSS
  - React JS
  - Socket.io
+ - Dotenv
  - Material UI
  - SQLAlchemy
  - Flask
