@@ -29,9 +29,11 @@ function CreateColorSliders(props) {
     const rgbString = `${rgb[0]},${rgb[1]},${rgb[2]}`;
 
     const connectToSocket = () => {
-        socket = io(CHRISTMAS_TREE_URL, { reconnectionAttempts: 1 });
+        socket = io(`http://${props.currentDevice}:5000/`, {
+            reconnectionAttempts: 1,
+        });
 
-        socket.on("connect_error", (error) => {
+        socket.on("connect_error", () => {
             setServerUnavailable(true);
         });
 
