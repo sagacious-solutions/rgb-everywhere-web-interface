@@ -24,9 +24,9 @@ Bunny for scale.
  - Ender 3 Pro V2 for Printing Screen Mount
  - Fusion 360 for Parts Design
 
-# Easily add new devices to control
+# Easily manage available display devices
 <p align="center">
-    <img  src="./docs/add_new_device_demo.gif" width="75%" />
+    <img  src="./docs/delete_add_device_demo.gif" width="75%" />
 </p>
 
 # Live connection via Websockets
