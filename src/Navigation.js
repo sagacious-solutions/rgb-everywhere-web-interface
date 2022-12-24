@@ -1,32 +1,34 @@
 import React, { useEffect } from "react";
 import clsx from "clsx";
 import { makeStyles, useTheme } from "@material-ui/core/styles";
-import Drawer from "@material-ui/core/Drawer";
-import AppBar from "@material-ui/core/AppBar";
-import Toolbar from "@material-ui/core/Toolbar";
-import List from "@material-ui/core/List";
-import Box from "@mui/material/Box";
-import CssBaseline from "@material-ui/core/CssBaseline";
-import Typography from "@material-ui/core/Typography";
-import Divider from "@material-ui/core/Divider";
-import IconButton from "@material-ui/core/IconButton";
-import SettingsIcon from "@mui/icons-material/Settings";
-import MenuIcon from "@material-ui/icons/Menu";
-import ChevronLeftIcon from "@material-ui/icons/ChevronLeft";
-import ChevronRightIcon from "@material-ui/icons/ChevronRight";
-import ListItem from "@material-ui/core/ListItem";
-import ListItemIcon from "@material-ui/core/ListItemIcon";
-import ListItemText from "@material-ui/core/ListItemText";
-import Palette from "@material-ui/icons/Palette";
-import TextureIcon from "@mui/icons-material/Texture";
-import TuneIcon from "@mui/icons-material/Tune";
-import TrafficIcon from "@material-ui/icons/Traffic";
-import Button from "@mui/material/Button";
+import {
+    Drawer,
+    AppBar,
+    Toolbar,
+    List,
+    CssBaseline,
+    Typography,
+    Divider,
+    IconButton,
+    ListItem,
+    ListItemIcon,
+    ListItemText,
+} from "@material-ui/core/";
+import {
+    Settings,
+    Tune,
+    Traffic,
+    Palette,
+    ChevronRight,
+    ChevronLeft,
+    Texture,
+    Menu,
+} from "@mui/icons-material";
+import { Box, Button } from "@mui/material";
 import Dropdown from "react-dropdown";
 import "react-dropdown/style.css";
 import "reactjs-popup/dist/index.css";
 import AddNewDevicePopup from "./pages/components/AddNewDevicePopup";
-// Pages
 import SelectAnimation from "./pages/SelectAnimation";
 import SetSolidPreset from "./pages/SetSolidPreset";
 import CreateColorSliders from "./pages/CreateColorSliders";
@@ -193,7 +195,7 @@ export default function Navigation() {
                             [classes.hide]: open,
                         })}
                     >
-                        <MenuIcon />
+                        <Menu />
                     </IconButton>
                     <Typography variant="h6" noWrap>
                         RGB Everywhere
@@ -222,7 +224,7 @@ export default function Navigation() {
                             setNewDevicePopupOpen(!newDevicePopupOpen);
                         }}
                     >
-                        <SettingsIcon />
+                        <Settings />
                     </Button>
                 </Toolbar>
             </AppBar>
@@ -242,9 +244,9 @@ export default function Navigation() {
                 <div className={classes.toolbar}>
                     <IconButton onClick={handleDrawerClose}>
                         {theme.direction === "rtl" ? (
-                            <ChevronRightIcon />
+                            <ChevronRight />
                         ) : (
-                            <ChevronLeftIcon />
+                            <ChevronLeft />
                         )}
                     </IconButton>
                 </div>
@@ -258,7 +260,7 @@ export default function Navigation() {
                         }}
                     >
                         <ListItemIcon>
-                            <TrafficIcon />
+                            <Traffic />
                         </ListItemIcon>
                         <ListItemText primary={"Animated Patterns"} />
                     </ListItem>
@@ -282,7 +284,7 @@ export default function Navigation() {
                         }}
                     >
                         <ListItemIcon>
-                            <TuneIcon />
+                            <Tune />
                         </ListItemIcon>
                         <ListItemText primary={"Create Color"} />
                     </ListItem>
@@ -294,7 +296,7 @@ export default function Navigation() {
                         }}
                     >
                         <ListItemIcon>
-                            <TextureIcon />
+                            <Texture />
                         </ListItemIcon>
                         <ListItemText primary={"DIY Patterns"} />
                     </ListItem>
