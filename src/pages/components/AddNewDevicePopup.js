@@ -8,6 +8,7 @@ import CloseIcon from "@mui/icons-material/Close";
 import Button from "@mui/material/Button";
 import RGBTestButtonGroup from "./RGBTestButtonGroup";
 
+
 function isRgbValueValid(value) {
     const validRGBValues = ["rgb"];
     return validRGBValues.includes(value.toLowerCase());
