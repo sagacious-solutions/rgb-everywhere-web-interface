@@ -3,13 +3,17 @@ import BasicButton from "./components/BasicButton";
 import Avatar from "@mui/material/Avatar";
 import Stack from "@mui/material/Stack";
 import useServerCommunication from "../serverCommunication";
-import { SketchPicker } from "react-color";
+import { SketchPicker, HuePicker } from "react-color";
 
 function getRgb(color) {
     const r = color.rgb.r;
     const g = color.rgb.g;
     const b = color.rgb.b;
     return [r, g, b];
+}
+
+function colorToCssRgb(color) {
+    return `rgb(${color.rgb.r},${color.rgb.g},${color.rgb.b})`;
 }
 
 function generatePatternDots(pattern) {
@@ -21,7 +25,7 @@ function generatePatternDots(pattern) {
                 <Avatar
                     key={`color-circle-${index}`}
                     sx={{
-                        backgroundColor: color.hex,
+                        backgroundColor: colorToCssRgb(color),
                         marginLeft: index ? "0px" : "15px",
                     }}
                     children={""}
@@ -44,13 +48,19 @@ function CustomPattern(props) {
         setColor(color);
     };
 
-    
-    function sendPatternToServer(pattern) {
+    function convertToRgbList(pattern) {
         const rgbList = [];
 
         pattern.forEach((color) => {
             rgbList.push([color.rgb.r, color.rgb.g, color.rgb.b]);
         });
+
+        return rgbList;
+    }
+
+    function sendPatternToServer(pattern) {
+        const rgbList = convertToRgbList(pattern);
+
         postCustomPatternRequest(rgbList, props.currentDevice);
     }
 
@@ -72,23 +82,42 @@ function CustomPattern(props) {
                 <BasicButton
                     style={{ width: "221px" }}
                     buttonText={"Add color to Pattern"}
-                    onClick={() => setPattern([...pattern, color])}
+                    onClick={() => {
+                        console.log(pattern);
+                        setPattern([...pattern, color]);
+                    }}
                 />
             </div>
-            <Stack
+
+            <div
                 style={{
                     display: "flex",
-                    marginTop: 50,
-                    height: "4em",
-                    backgroundColor: "grey",
-                    borderRadius: "25px",
-                    border: "3px solid black",
+                    flexDirection: "column",
+                    alignItems: "center",
+                    marginTop: "75px",
                 }}
-                direction="row"
-                spacing={2}
             >
-                {generatePatternDots(pattern)}
-            </Stack>
+                <HuePicker
+                    width="90%"
+                    onChange={handleColorChange}
+                    color={color}
+                />
+                <Stack
+                    style={{
+                        display: "flex",
+                        marginTop: 50,
+                        width: "90%",
+                        height: "4em",
+                        backgroundColor: "grey",
+                        borderRadius: "25px",
+                        border: "3px solid black",
+                    }}
+                    direction="row"
+                    spacing={2}
+                >
+                    {generatePatternDots(pattern)}
+                </Stack>
+            </div>
             <div
                 style={{
                     marginTop: 50,
