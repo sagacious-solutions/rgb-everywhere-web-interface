@@ -1,9 +1,11 @@
 import { useEffect, useState } from "react";
 import BasicButton from "./components/BasicButton";
+import PatternTable from "./components/PatternTable";
 import Avatar from "@mui/material/Avatar";
 import Stack from "@mui/material/Stack";
 import useServerCommunication from "../serverCommunication";
 import { SketchPicker, HuePicker } from "react-color";
+import { Button } from "@mui/material";
 
 function getRgb(color) {
     const r = color.rgb.r;
@@ -12,7 +14,25 @@ function getRgb(color) {
     return [r, g, b];
 }
 
+function patternToRgbArray(pattern) {
+    let rgbArr = [];
+
+    pattern.forEach((color) => {
+        rgbArr.push(getRgb(color));
+    });
+
+    return rgbArr;
+}
+
+/**
+ * Takes a color as an Array or Color object and returns the CSS color string
+ * @param {*} color
+ * @returns a CSS compatible color string
+ */
 function colorToCssRgb(color) {
+    if (Array.isArray(color)) {
+        return `rgb(${color[0]},${color[1]},${color[2]})`;
+    }
     return `rgb(${color.rgb.r},${color.rgb.g},${color.rgb.b})`;
 }
 
@@ -38,7 +58,7 @@ function generatePatternDots(pattern) {
 }
 
 function CustomPattern(props) {
-    const { postColorRequest, postCustomPatternRequest } =
+    const { postColorRequest, postCustomPatternRequest, postNewPattern } =
         useServerCommunication();
     const [pattern, setPattern] = useState([]);
     const [color, setColor] = useState({ rgb: { r: 50, g: 0, b: 0 } });
@@ -72,23 +92,33 @@ function CustomPattern(props) {
     return (
         <div>
             <h2>Make your own pattern.</h2>
-            <div style={{ display: "flex", flexDirection: "column" }}>
-                <SketchPicker onChange={handleColorChange} color={color} />
-                <BasicButton
-                    style={{ width: "221px", backgroundColor: "#48AAF1" }}
-                    buttonText={"Preview Color"}
-                    onClick={() => postColorRequest(rgb, props.currentDevice)}
-                />
-                <BasicButton
-                    style={{ width: "221px" }}
-                    buttonText={"Add color to Pattern"}
-                    onClick={() => {
-                        console.log(pattern);
-                        setPattern([...pattern, color]);
-                    }}
-                />
+            <div
+                style={{
+                    display: "flex",
+                    flexDirection: "row",
+                    justifyContent: "space-around",
+                }}
+            >
+                <div style={{ display: "flex", flexDirection: "column" }}>
+                    <SketchPicker onChange={handleColorChange} color={color} />
+                    <BasicButton
+                        style={{ width: "221px", backgroundColor: "#48AAF1" }}
+                        buttonText={"Preview Color"}
+                        onClick={() =>
+                            postColorRequest(rgb, props.currentDevice)
+                        }
+                    />
+                    <BasicButton
+                        style={{ width: "221px" }}
+                        buttonText={"Add color to Pattern"}
+                        onClick={() => {
+                            console.log(pattern);
+                            setPattern([...pattern, color]);
+                        }}
+                    />
+                </div>
+                <PatternTable />
             </div>
-
             <div
                 style={{
                     display: "flex",
@@ -130,6 +160,14 @@ function CustomPattern(props) {
                     buttonText={"Set device to Pattern"}
                     onClick={() => sendPatternToServer(pattern)}
                 />
+                <Button
+                    sx={{ background: "blue", color: "white" }}
+                    onClick={() => {
+                        postNewPattern(patternToRgbArray(pattern));
+                    }}
+                >
+                    Save Pattern
+                </Button>
                 <BasicButton
                     style={{}}
                     buttonText={"Clear Pattern"}
