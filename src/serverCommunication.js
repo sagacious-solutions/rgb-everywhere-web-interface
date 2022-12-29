@@ -22,12 +22,16 @@ export default function useServerCommunication() {
     function postUpdateDevice(device) {
         return axios.post(DB_URL + "/updateDevice/", { device });
     }
+    function postUpdatePattern(old_pattern, new_pattern) {
+        return axios.post(DB_URL + "/updatePattern/", {
+            old_pattern,
+            new_pattern,
+        });
+    }
     function postDeleteDevice(device) {
         return axios.post(DB_URL + "/deleteDevice/", { device });
     }
     function postDeletePattern(pattern) {
-        console.log(pattern);
-
         return axios.post(DB_URL + "/deletePattern/", { pattern });
     }
 
@@ -100,6 +104,7 @@ export default function useServerCommunication() {
         postDeviceConfig,
         postNewPattern,
         postDeletePattern,
+        postUpdatePattern,
         getPatternsList,
     };
 }
