@@ -8,8 +8,7 @@ import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
 import { HighlightOff, PublishedWithChanges } from "@mui/icons-material";
-// import HighlightOffIcon from "@mui/icons-material/HighlightOff";
-import PublishedWithChangesIcon from "@mui/icons-material/PublishedWithChanges";
+
 /**
  * Takes a color as an Array or Color object and returns the CSS color string
  * @param {*} color
@@ -60,8 +59,6 @@ function createTableRows(patterns) {
                 </TableCell>
                 <TableCell align="right">
                     <PublishedWithChanges />
-                </TableCell>
-                <TableCell align="right">
                     <HighlightOff />
                 </TableCell>
             </TableRow>
@@ -78,12 +75,11 @@ export default function PatternTable(props) {
             sx={{ height: "400px", width: "60%" }}
             component={Paper}
         >
-            <Table aria-label="simple table">
+            <Table aria-label="pattern table">
                 <TableHead>
                     <TableRow>
                         <TableCell>Pattern</TableCell>
-                        <TableCell align="right">Replace Current</TableCell>
-                        <TableCell align="right">Delete</TableCell>
+                        <TableCell align="right">Replace / Delete</TableCell>
                     </TableRow>
                 </TableHead>
                 <TableBody>{createTableRows(props.patterns)}</TableBody>
