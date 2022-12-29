@@ -118,7 +118,11 @@ function CustomPattern(props) {
                         }}
                     />
                 </div>
-                <PatternTable patterns={props.savedPatterns} />
+
+                <PatternTable
+                    patterns={props.savedPatterns}
+                    updateSavedPatterns={() => props.updateSavedPatterns()}
+                />
             </div>
             <div
                 style={{
@@ -164,7 +168,9 @@ function CustomPattern(props) {
                 <Button
                     sx={{ background: "blue", color: "white" }}
                     onClick={() => {
-                        postNewPattern(patternToRgbArray(pattern));
+                        postNewPattern(patternToRgbArray(pattern)).then(() => {
+                            props.updateSavedPatterns();
+                        });
                     }}
                 >
                     Save Pattern

@@ -8,6 +8,7 @@ import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
 import { HighlightOff, PublishedWithChanges } from "@mui/icons-material";
+import useServerCommunication from "../../serverCommunication";
 
 /**
  * Takes a color as an Array or Color object and returns the CSS color string
@@ -41,9 +42,8 @@ function generatePatternDots(pattern) {
     );
 }
 
-function createTableRows(patterns) {
+function createTableRows(patterns, postDeletePattern, updateSavedPatterns) {
     const rows = [];
-    console.log(patterns);
     patterns.forEach((pattern, i) => {
         rows.push(
             <TableRow
@@ -58,18 +58,25 @@ function createTableRows(patterns) {
                     {generatePatternDots(pattern)}
                 </TableCell>
                 <TableCell align="right">
-                    <PublishedWithChanges />
-                    <HighlightOff />
+                    <PublishedWithChanges sx={{ marginRight: "20px" }} />
+                    <HighlightOff
+                        sx={{ marginRight: "15px" }}
+                        onClick={() => {
+                            postDeletePattern(pattern).then(
+                                updateSavedPatterns
+                            );
+                        }}
+                    />
                 </TableCell>
             </TableRow>
         );
     });
-    console.log(rows);
     return rows;
 }
 
 export default function PatternTable(props) {
-    console.log(props.patterns);
+    const { postDeletePattern } = useServerCommunication();
+
     return (
         <TableContainer
             sx={{ height: "400px", width: "60%" }}
@@ -82,7 +89,13 @@ export default function PatternTable(props) {
                         <TableCell align="right">Replace / Delete</TableCell>
                     </TableRow>
                 </TableHead>
-                <TableBody>{createTableRows(props.patterns)}</TableBody>
+                <TableBody>
+                    {createTableRows(
+                        props.patterns,
+                        postDeletePattern,
+                        props.updateSavedPatterns
+                    )}
+                </TableBody>
             </Table>
         </TableContainer>
     );
