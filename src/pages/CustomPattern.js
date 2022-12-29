@@ -6,44 +6,19 @@ import Stack from "@mui/material/Stack";
 import useServerCommunication from "../serverCommunication";
 import { SketchPicker, HuePicker } from "react-color";
 import { Button } from "@mui/material";
-
-function getRgb(color) {
-    const r = color.rgb.r;
-    const g = color.rgb.g;
-    const b = color.rgb.b;
-    return [r, g, b];
-}
-
-function patternToRgbArray(pattern) {
-    let rgbArr = [];
-
-    pattern.forEach((color) => {
-        rgbArr.push(getRgb(color));
-    });
-
-    return rgbArr;
-}
-
-/**
- * Takes a color as an Array or Color object and returns the CSS color string
- * @param {*} color
- * @returns a CSS compatible color string
- */
-function colorToCssRgb(color) {
-    if (Array.isArray(color)) {
-        return `rgb(${color[0]},${color[1]},${color[2]})`;
-    }
-    return `rgb(${color.rgb.r},${color.rgb.g},${color.rgb.b})`;
-}
+import { getRgb, patternToRgbArray, colorToCssRgb } from "../helpers";
 
 function generatePatternDots(pattern) {
     let avatars = [];
 
     pattern.forEach((color, index) => {
         avatars.push(
-            <div style={{ marginTop: "0.33em" }}>
+            <div
+                key={`dot-spacing-div-${index}`}
+                style={{ marginTop: "0.33em" }}
+            >
                 <Avatar
-                    key={`color-circle-${index}`}
+                    key={`circle-dot-${index}`}
                     sx={{
                         backgroundColor: colorToCssRgb(color),
                         marginLeft: index ? "0px" : "15px",
@@ -63,8 +38,6 @@ function CustomPattern(props) {
     const [pattern, setPattern] = useState([]);
     const [color, setColor] = useState({ rgb: { r: 50, g: 0, b: 0 } });
     const [rgb, setRgb] = useState(0);
-
-    console.log(props.appState);
 
     const handleColorChange = (color, _event) => {
         setColor(color);
@@ -113,7 +86,6 @@ function CustomPattern(props) {
                         style={{ width: "221px" }}
                         buttonText={"Add color to Pattern"}
                         onClick={() => {
-                            console.log(pattern);
                             setPattern([...pattern, color]);
                         }}
                     />
@@ -122,6 +94,8 @@ function CustomPattern(props) {
                 <PatternTable
                     patterns={props.savedPatterns}
                     updateSavedPatterns={() => props.updateSavedPatterns()}
+                    editPattern={setPattern}
+                    currentPattern={pattern}
                 />
             </div>
             <div
