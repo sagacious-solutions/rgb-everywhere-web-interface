@@ -7,17 +7,9 @@ import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
-import { HighlightOff, PublishedWithChanges } from "@mui/icons-material";
+import { HighlightOff, PublishedWithChanges, Edit } from "@mui/icons-material";
 import useServerCommunication from "../../serverCommunication";
-
-/**
- * Takes a color as an Array or Color object and returns the CSS color string
- * @param {*} color
- * @returns a CSS compatible color string
- */
-function colorToCssRgb(color) {
-    return `rgb(${color[0]},${color[1]},${color[2]})`;
-}
+import { colorToCssRgb, patternToRgbArray } from "../../helpers";
 
 function generatePatternDots(pattern) {
     let avatars = [];
@@ -42,7 +34,14 @@ function generatePatternDots(pattern) {
     );
 }
 
-function createTableRows(patterns, postDeletePattern, updateSavedPatterns) {
+function createTableRows(
+    patterns,
+    editPattern,
+    postDeletePattern,
+    postUpdatePattern,
+    currentPattern,
+    updateSavedPatterns
+) {
     const rows = [];
     patterns.forEach((pattern, i) => {
         rows.push(
@@ -58,7 +57,19 @@ function createTableRows(patterns, postDeletePattern, updateSavedPatterns) {
                     {generatePatternDots(pattern)}
                 </TableCell>
                 <TableCell align="right">
-                    <PublishedWithChanges sx={{ marginRight: "20px" }} />
+                    <Edit
+                        sx={{ marginRight: "24px" }}
+                        onClick={() => editPattern(pattern)}
+                    />
+                    <PublishedWithChanges
+                        sx={{ marginRight: "24px" }}
+                        onClick={() => {
+                            postUpdatePattern(
+                                pattern,
+                                patternToRgbArray(currentPattern)
+                            ).then(updateSavedPatterns);
+                        }}
+                    />
                     <HighlightOff
                         sx={{ marginRight: "15px" }}
                         onClick={() => {
@@ -75,7 +86,7 @@ function createTableRows(patterns, postDeletePattern, updateSavedPatterns) {
 }
 
 export default function PatternTable(props) {
-    const { postDeletePattern } = useServerCommunication();
+    const { postDeletePattern, postUpdatePattern } = useServerCommunication();
 
     return (
         <TableContainer
@@ -86,13 +97,18 @@ export default function PatternTable(props) {
                 <TableHead>
                     <TableRow>
                         <TableCell>Pattern</TableCell>
-                        <TableCell align="right">Replace / Delete</TableCell>
+                        <TableCell align="right">
+                            Edit / Replace / Delete
+                        </TableCell>
                     </TableRow>
                 </TableHead>
                 <TableBody>
                     {createTableRows(
                         props.patterns,
+                        props.editPattern,
                         postDeletePattern,
+                        postUpdatePattern,
+                        props.currentPattern,
                         props.updateSavedPatterns
                     )}
                 </TableBody>
