@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import clsx from "clsx";
 import { makeStyles, useTheme } from "@material-ui/core/styles";
 import {
@@ -34,7 +34,6 @@ import SetSolidPreset from "./pages/SetSolidPreset";
 import CreateColorSliders from "./pages/CreateColorSliders";
 import CustomPattern from "./pages/CustomPattern";
 
-import { DictToDeviceList } from "./DisplayDevice";
 import useServerCommunication from "./serverCommunication";
 import useApplicationData from "./hooks/useApplicationData";
 const drawerWidth = 240;
@@ -107,18 +106,17 @@ export default function Navigation() {
         currentDevice,
         setCurrentDevice,
         devices,
-        setDevices,
         savedPatterns,
         updateSavedPatterns,
+        updateDeviceList,
     } = useApplicationData();
     const classes = useStyles();
     const theme = useTheme();
-    const [dropdownList, setDropdownList] = React.useState([]);
-    const [open, setOpen] = React.useState(false);
-    const [page, setPage] = React.useState("animation");
-    const [newDevicePopupOpen, setNewDevicePopupOpen] = React.useState(false);
-    const { getDeviceList } = useServerCommunication();
-    const [modifyExisting, setModifyExisting] = React.useState(false);
+    const [dropdownList, setDropdownList] = useState([]);
+    const [drawerOpen, setDrawerOpen] = useState(false);
+    const [page, setPage] = useState("animation");
+    const [newDevicePopupOpen, setNewDevicePopupOpen] = useState(false);
+    const [modifyExistingDevice, setModifyExistingDevice] = useState(false);
     const ADD_NEW_DEVICE_OPTION = "Add New Device..";
 
     const [pages, setPages] = React.useState({
@@ -154,18 +152,16 @@ export default function Navigation() {
     }, [savedPatterns, currentDevice]);
 
     const handleDrawerOpen = () => {
-        setOpen(true);
+        setDrawerOpen(true);
     };
 
     const handleDrawerClose = () => {
-        setOpen(false);
+        setDrawerOpen(false);
     };
 
     useEffect(() => {
         if (!newDevicePopupOpen) {
-            getDeviceList().then((res) => {
-                setDevices(DictToDeviceList(res.data));
-            });
+            updateDeviceList();
         }
     }, [newDevicePopupOpen]);
 
@@ -191,7 +187,7 @@ export default function Navigation() {
                 value={currentDevice}
                 onChange={(dropValue) => {
                     if (dropValue.value == ADD_NEW_DEVICE_OPTION) {
-                        setModifyExisting(false);
+                        setModifyExistingDevice(false);
                         setNewDevicePopupOpen(true);
                         dropValue.value = "";
                         return;
@@ -210,7 +206,7 @@ export default function Navigation() {
             <AppBar
                 position="fixed"
                 className={clsx(classes.appBar, {
-                    [classes.appBarShift]: open,
+                    [classes.appBarShift]: drawerOpen,
                 })}
             >
                 <Toolbar>
@@ -220,7 +216,7 @@ export default function Navigation() {
                         onClick={handleDrawerOpen}
                         edge="start"
                         className={clsx(classes.menuButton, {
-                            [classes.hide]: open,
+                            [classes.hide]: drawerOpen,
                         })}
                     >
                         <Menu />
@@ -235,7 +231,7 @@ export default function Navigation() {
                     <Box sx={{ flexGrow: 0.025 }} />
                     {dropdown}
                     <AddNewDevicePopup
-                        modifyExisting={modifyExisting}
+                        modifyExisting={modifyExistingDevice}
                         currentDevice={currentDevice}
                         devices={devices}
                         open={newDevicePopupOpen}
@@ -248,7 +244,7 @@ export default function Navigation() {
                             color: "white",
                         }}
                         onClick={() => {
-                            if (currentDevice) setModifyExisting(true);
+                            if (currentDevice) setModifyExistingDevice(true);
                             setNewDevicePopupOpen(!newDevicePopupOpen);
                         }}
                     >
@@ -259,13 +255,13 @@ export default function Navigation() {
             <Drawer
                 variant="permanent"
                 className={clsx(classes.drawer, {
-                    [classes.drawerOpen]: open,
-                    [classes.drawerClose]: !open,
+                    [classes.drawerOpen]: drawerOpen,
+                    [classes.drawerClose]: !drawerOpen,
                 })}
                 classes={{
                     paper: clsx({
-                        [classes.drawerOpen]: open,
-                        [classes.drawerClose]: !open,
+                        [classes.drawerOpen]: drawerOpen,
+                        [classes.drawerClose]: !drawerOpen,
                     }),
                 }}
             >

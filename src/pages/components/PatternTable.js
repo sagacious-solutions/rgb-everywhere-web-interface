@@ -1,6 +1,7 @@
 import * as React from "react";
 import { Avatar } from "@mui/material";
 import Table from "@mui/material/Table";
+import Stack from "@mui/material/Stack";
 import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
 import TableContainer from "@mui/material/TableContainer";
@@ -18,16 +19,21 @@ import { colorToCssRgb, patternToRgbArray } from "../../helpers";
  */
 function generatePatternDots(pattern) {
     let avatars = [];
-
     pattern.forEach((color, index) => {
         avatars.push(
             <Avatar
+                className="Avatars"
                 key={`color-circle-${index}`}
                 sx={{
                     backgroundColor: colorToCssRgb(color),
+                    border: "1px solid black",
                     marginLeft: "2px",
                     width: "20px",
                     height: "20px",
+                    "&:hover": {
+                        width: "25px",
+                        height: "25px",
+                    },
                 }}
                 children={""}
             />
@@ -35,14 +41,15 @@ function generatePatternDots(pattern) {
     });
 
     return (
-        <div
+        <Stack
             style={{
                 display: "flex",
                 flexDirection: "row",
+                alignItems: "center",
             }}
         >
             {avatars}
-        </div>
+        </Stack>
     );
 }
 
@@ -52,7 +59,8 @@ function createTableRows(
     postDeletePattern,
     postUpdatePattern,
     currentPattern,
-    updateSavedPatterns
+    updateSavedPatterns,
+    setCurrentDeviceToPattern
 ) {
     const rows = [];
 
@@ -66,7 +74,13 @@ function createTableRows(
                     },
                 }}
             >
-                <TableCell component="th" scope="row">
+                <TableCell
+                    component="th"
+                    scope="row"
+                    onClick={() => {
+                        setCurrentDeviceToPattern(pattern);
+                    }}
+                >
                     {generatePatternDots(pattern)}
                 </TableCell>
                 <TableCell
@@ -159,7 +173,8 @@ export default function PatternTable(props) {
                         postDeletePattern,
                         postUpdatePattern,
                         props.currentPattern,
-                        props.updateSavedPatterns
+                        props.updateSavedPatterns,
+                        props.setCurrentDeviceToPattern
                     )}
                 </TableBody>
             </Table>
