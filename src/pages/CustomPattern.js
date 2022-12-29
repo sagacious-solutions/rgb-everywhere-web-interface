@@ -64,6 +64,8 @@ function CustomPattern(props) {
     const [color, setColor] = useState({ rgb: { r: 50, g: 0, b: 0 } });
     const [rgb, setRgb] = useState(0);
 
+    console.log(props.appState);
+
     const handleColorChange = (color, _event) => {
         setColor(color);
     };
@@ -86,7 +88,6 @@ function CustomPattern(props) {
 
     useEffect(() => {
         setRgb(getRgb(color));
-        console.log(color);
     }, [color]);
 
     return (
@@ -117,7 +118,7 @@ function CustomPattern(props) {
                         }}
                     />
                 </div>
-                <PatternTable />
+                <PatternTable patterns={props.savedPatterns} />
             </div>
             <div
                 style={{
