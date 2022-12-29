@@ -103,18 +103,19 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function Navigation() {
-    const { appState, setCurrentDevice, setDevices } = useApplicationData();
+    const { appState, setCurrentDevice, setDevices, setSavedPatterns } =
+        useApplicationData();
     const classes = useStyles();
     const theme = useTheme();
     const [dropdownList, setDropdownList] = React.useState([]);
     const [open, setOpen] = React.useState(false);
     const [page, setPage] = React.useState("animation");
     const [newDevicePopupOpen, setNewDevicePopupOpen] = React.useState(false);
-    const { getDeviceList } = useServerCommunication();
+    const { getDeviceList, getPatternsList } = useServerCommunication();
     const [modifyExisting, setModifyExisting] = React.useState(false);
     const ADD_NEW_DEVICE_OPTION = "Add New Device..";
 
-    const pages = {
+    const [pages, setPages] = React.useState({
         animation: <SelectAnimation currentDevice={appState.currentDevice} />,
         SetSolidPreset: (
             <SetSolidPreset currentDevice={appState.currentDevice} />
@@ -122,8 +123,25 @@ export default function Navigation() {
         CreateColorSliders: (
             <CreateColorSliders currentDevice={appState.currentDevice} />
         ),
-        CustomPattern: <CustomPattern currentDevice={appState.currentDevice} />,
-    };
+        CustomPattern: (
+            <CustomPattern
+                currentDevice={appState.currentDevice}
+                savedPatterns={appState.savedPatterns}
+            />
+        ),
+    });
+
+    useEffect(() => {
+        setPages({
+            ...pages,
+            CustomPattern: (
+                <CustomPattern
+                    currentDevice={appState.currentDevice}
+                    savedPatterns={appState.savedPatterns}
+                />
+            ),
+        });
+    }, [appState.savedPatterns]);
 
     const handleDrawerOpen = () => {
         setOpen(true);
@@ -140,6 +158,16 @@ export default function Navigation() {
             });
         }
     }, [newDevicePopupOpen]);
+
+    useEffect(() => {
+        getPatternsList().then((res) => {
+            let patterns = [];
+            for (const [_, value] of Object.entries(res.data)) {
+                patterns.push(value);
+            }
+            setSavedPatterns(patterns);
+        });
+    }, []);
 
     useEffect(() => {
         const deviceOptions = appState.devices.map((d) => {
