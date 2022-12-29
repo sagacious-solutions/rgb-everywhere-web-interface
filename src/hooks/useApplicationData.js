@@ -1,22 +1,34 @@
 // import React from "react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import useServerCommunication from "../serverCommunication";
 
 export default function useApplicationData() {
-    const [appState, setAppState] = useState({
-        currentDevice: null,
-        devices: [],
-        savedPatterns: [],
-    });
+    const [devices, setDevices] = useState([]);
+    const [currentDevice, setCurrentDevice] = useState(null);
+    const [savedPatterns, setSavedPatterns] = useState(null);
+    const { getPatternsList } = useServerCommunication();
 
-    function setCurrentDevice(device) {
-        setAppState({ ...appState, currentDevice: device });
-    }
-    function setDevices(devices) {
-        setAppState({ ...appState, devices: devices });
-    }
-    function setSavedPatterns(patterns) {
-        setAppState({ ...appState, savedPatterns: patterns });
+    function updateSavedPatterns() {
+        getPatternsList().then((res) => {
+            let patterns = [];
+            for (const [_, value] of Object.entries(res.data)) {
+                patterns.push(value);
+            }
+            setSavedPatterns(patterns);
+        });
     }
 
-    return { appState, setCurrentDevice, setDevices, setSavedPatterns };
+    useEffect(() => {
+        updateSavedPatterns();
+    }, []);
+
+    return {
+        currentDevice,
+        setCurrentDevice,
+        devices,
+        setDevices,
+        savedPatterns,
+        setSavedPatterns,
+        updateSavedPatterns,
+    };
 }

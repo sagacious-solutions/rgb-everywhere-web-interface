@@ -103,30 +103,34 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function Navigation() {
-    const { appState, setCurrentDevice, setDevices, setSavedPatterns } =
-        useApplicationData();
+    const {
+        currentDevice,
+        setCurrentDevice,
+        devices,
+        setDevices,
+        savedPatterns,
+        updateSavedPatterns,
+    } = useApplicationData();
     const classes = useStyles();
     const theme = useTheme();
     const [dropdownList, setDropdownList] = React.useState([]);
     const [open, setOpen] = React.useState(false);
     const [page, setPage] = React.useState("animation");
     const [newDevicePopupOpen, setNewDevicePopupOpen] = React.useState(false);
-    const { getDeviceList, getPatternsList } = useServerCommunication();
+    const { getDeviceList } = useServerCommunication();
     const [modifyExisting, setModifyExisting] = React.useState(false);
     const ADD_NEW_DEVICE_OPTION = "Add New Device..";
 
     const [pages, setPages] = React.useState({
-        animation: <SelectAnimation currentDevice={appState.currentDevice} />,
-        SetSolidPreset: (
-            <SetSolidPreset currentDevice={appState.currentDevice} />
-        ),
+        animation: <SelectAnimation currentDevice={currentDevice} />,
+        SetSolidPreset: <SetSolidPreset currentDevice={currentDevice} />,
         CreateColorSliders: (
-            <CreateColorSliders currentDevice={appState.currentDevice} />
+            <CreateColorSliders currentDevice={currentDevice} />
         ),
         CustomPattern: (
             <CustomPattern
-                currentDevice={appState.currentDevice}
-                savedPatterns={appState.savedPatterns}
+                currentDevice={currentDevice}
+                savedPatterns={savedPatterns}
             />
         ),
     });
@@ -136,12 +140,13 @@ export default function Navigation() {
             ...pages,
             CustomPattern: (
                 <CustomPattern
-                    currentDevice={appState.currentDevice}
-                    savedPatterns={appState.savedPatterns}
+                    currentDevice={currentDevice}
+                    savedPatterns={savedPatterns}
+                    updateSavedPatterns={updateSavedPatterns}
                 />
             ),
         });
-    }, [appState.savedPatterns]);
+    }, [savedPatterns]);
 
     const handleDrawerOpen = () => {
         setOpen(true);
@@ -160,17 +165,7 @@ export default function Navigation() {
     }, [newDevicePopupOpen]);
 
     useEffect(() => {
-        getPatternsList().then((res) => {
-            let patterns = [];
-            for (const [_, value] of Object.entries(res.data)) {
-                patterns.push(value);
-            }
-            setSavedPatterns(patterns);
-        });
-    }, []);
-
-    useEffect(() => {
-        const deviceOptions = appState.devices.map((d) => {
+        const deviceOptions = devices.map((d) => {
             return {
                 value: d.ip_address,
                 label: `${d.name} - ${d.ip_address}`,
@@ -181,14 +176,14 @@ export default function Navigation() {
         if (dropdownList.length) {
             setCurrentDevice(dropdownList[0].value);
         }
-    }, [appState.devices]);
+    }, [devices]);
 
     let dropdown =
-        appState.devices.length > 0 ? (
+        devices.length > 0 ? (
             <Dropdown
                 className={classes.dropDown}
                 options={dropdownList}
-                value={appState.currentDevice}
+                value={currentDevice}
                 onChange={(dropValue) => {
                     if (dropValue.value == ADD_NEW_DEVICE_OPTION) {
                         setModifyExisting(false);
@@ -236,8 +231,8 @@ export default function Navigation() {
                     {dropdown}
                     <AddNewDevicePopup
                         modifyExisting={modifyExisting}
-                        currentDevice={appState.currentDevice}
-                        devices={appState.devices}
+                        currentDevice={currentDevice}
+                        devices={devices}
                         open={newDevicePopupOpen}
                         closePopup={() => setNewDevicePopupOpen(false)}
                     />
@@ -248,7 +243,7 @@ export default function Navigation() {
                             color: "white",
                         }}
                         onClick={() => {
-                            if (appState.currentDevice) setModifyExisting(true);
+                            if (currentDevice) setModifyExisting(true);
                             setNewDevicePopupOpen(!newDevicePopupOpen);
                         }}
                     >
