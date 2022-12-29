@@ -9,6 +9,9 @@ export default function useServerCommunication() {
 
     function getDeviceList() {
         return axios.get(DB_URL + "/getDevices/");
+    }   
+    function getPatternsList() {
+        return axios.get(DB_URL + "/getPatterns/");
     }
     function postNewDevice(device) {
         return axios.post(DB_URL + "/putNewDevice/", { device });
@@ -91,5 +94,6 @@ export default function useServerCommunication() {
         sayHello,
         postDeviceConfig,
         postNewPattern,
+        getPatternsList,
     };
 }
