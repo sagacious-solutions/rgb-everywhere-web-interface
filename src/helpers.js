@@ -1,3 +1,9 @@
+/**
+ * Takes in a color, if its already an array, returns it. Otherwise assumes its a color
+ * object from React-Color and converts it to an array.
+ * @param {*} ObjectOrArray array or React-Color object
+ * @returns A 3 integer array for RGB
+ */
 function getRgb(color) {
     if (Array.isArray(color)) {
         return color;
