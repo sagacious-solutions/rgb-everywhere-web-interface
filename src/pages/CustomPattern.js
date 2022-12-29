@@ -8,8 +8,12 @@ import { SketchPicker, HuePicker } from "react-color";
 import { Button } from "@mui/material";
 import { getRgb, patternToRgbArray, colorToCssRgb } from "../helpers";
 
-function generatePatternDots(pattern) {
+function generatePatternDots(pattern, selectedDot, setSelectedDot) {
     let avatars = [];
+
+    const selectedStyle = {
+        border: "5px solid black",
+    };
 
     pattern.forEach((color, index) => {
         avatars.push(
@@ -22,8 +26,13 @@ function generatePatternDots(pattern) {
                     sx={{
                         backgroundColor: colorToCssRgb(color),
                         marginLeft: index ? "0px" : "15px",
+                        ...(index == selectedDot ? selectedStyle : {}),
+                        "&:hover": {
+                            ...selectedStyle,
+                        },
                     }}
                     children={""}
+                    onClick={() => setSelectedDot(index)}
                 />
             </div>
         );
@@ -38,26 +47,21 @@ function CustomPattern(props) {
     const [pattern, setPattern] = useState([]);
     const [color, setColor] = useState({ rgb: { r: 50, g: 0, b: 0 } });
     const [rgb, setRgb] = useState(0);
+    const [selectedDot, setSelectedDot] = useState(null);
 
     const handleColorChange = (color, _event) => {
         setColor(color);
     };
 
-    function convertToRgbList(pattern) {
-        const rgbList = [];
-
-        pattern.forEach((color) => {
-            rgbList.push([color.rgb.r, color.rgb.g, color.rgb.b]);
-        });
-
-        return rgbList;
-    }
-
     function sendPatternToServer(pattern) {
-        const rgbList = convertToRgbList(pattern);
+        const rgbList = patternToRgbArray(pattern);
 
         postCustomPatternRequest(rgbList, props.currentDevice);
     }
+
+    useEffect(() => {
+        setSelectedDot(null);
+    }, [pattern]);
 
     useEffect(() => {
         setRgb(getRgb(color));
@@ -84,8 +88,18 @@ function CustomPattern(props) {
                     />
                     <BasicButton
                         style={{ width: "221px" }}
-                        buttonText={"Add color to Pattern"}
+                        buttonText={
+                            selectedDot
+                                ? "Replace Color"
+                                : "Add color to Pattern"
+                        }
                         onClick={() => {
+                            if (selectedDot) {
+                                const newPattern = pattern;
+                                newPattern[selectedDot] = color;
+                                setPattern([...newPattern]);
+                                return;
+                            }
                             setPattern([...pattern, color]);
                         }}
                     />
@@ -124,7 +138,7 @@ function CustomPattern(props) {
                     direction="row"
                     spacing={2}
                 >
-                    {generatePatternDots(pattern)}
+                    {generatePatternDots(pattern, selectedDot, setSelectedDot)}
                 </Stack>
             </div>
             <div

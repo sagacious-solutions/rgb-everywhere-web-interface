@@ -89,7 +89,7 @@ function createTableRows(
                                 marginBottom: "-3px",
                             },
                         }}
-                        onClick={() => editPattern(pattern)}
+                        onClick={() => editPattern([...pattern])}
                     />
                     <PublishedWithChanges
                         sx={{
