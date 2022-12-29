@@ -9,7 +9,7 @@ export default function useServerCommunication() {
 
     function getDeviceList() {
         return axios.get(DB_URL + "/getDevices/");
-    }   
+    }
     function getPatternsList() {
         return axios.get(DB_URL + "/getPatterns/");
     }
@@ -24,6 +24,11 @@ export default function useServerCommunication() {
     }
     function postDeleteDevice(device) {
         return axios.post(DB_URL + "/deleteDevice/", { device });
+    }
+    function postDeletePattern(pattern) {
+        console.log(pattern);
+
+        return axios.post(DB_URL + "/deletePattern/", { pattern });
     }
 
     function postDeviceConfig(ip, color_mode, led_count) {
@@ -94,6 +99,7 @@ export default function useServerCommunication() {
         sayHello,
         postDeviceConfig,
         postNewPattern,
+        postDeletePattern,
         getPatternsList,
     };
 }
