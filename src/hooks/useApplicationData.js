@@ -5,6 +5,7 @@ export default function useApplicationData() {
     const [appState, setAppState] = useState({
         currentDevice: null,
         devices: [],
+        savedPatterns: [],
     });
 
     function setCurrentDevice(device) {
@@ -13,6 +14,9 @@ export default function useApplicationData() {
     function setDevices(devices) {
         setAppState({ ...appState, devices: devices });
     }
+    function setSavedPatterns(patterns) {
+        setAppState({ ...appState, savedPatterns: patterns });
+    }
 
-    return { appState, setCurrentDevice, setDevices };
+    return { appState, setCurrentDevice, setDevices, setSavedPatterns };
 }
