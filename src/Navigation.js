@@ -145,8 +145,13 @@ export default function Navigation() {
                     updateSavedPatterns={updateSavedPatterns}
                 />
             ),
+            animation: <SelectAnimation currentDevice={currentDevice} />,
+            SetSolidPreset: <SetSolidPreset currentDevice={currentDevice} />,
+            CreateColorSliders: (
+                <CreateColorSliders currentDevice={currentDevice} />
+            ),
         });
-    }, [savedPatterns]);
+    }, [savedPatterns, currentDevice]);
 
     const handleDrawerOpen = () => {
         setOpen(true);
