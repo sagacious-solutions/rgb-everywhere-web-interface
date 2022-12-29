@@ -11,6 +11,11 @@ import { HighlightOff, PublishedWithChanges, Edit } from "@mui/icons-material";
 import useServerCommunication from "../../serverCommunication";
 import { colorToCssRgb, patternToRgbArray } from "../../helpers";
 
+/**
+ * Generates the pattern dots for visualization in the table
+ * @param {*} pattern An arrar of colors to display
+ * @returns A row of colored circles surrounded in a div
+ */
 function generatePatternDots(pattern) {
     let avatars = [];
 
@@ -30,7 +35,14 @@ function generatePatternDots(pattern) {
     });
 
     return (
-        <div style={{ display: "flex", flexDirection: "row" }}>{avatars}</div>
+        <div
+            style={{
+                display: "flex",
+                flexDirection: "row",
+            }}
+        >
+            {avatars}
+        </div>
     );
 }
 
@@ -43,6 +55,7 @@ function createTableRows(
     updateSavedPatterns
 ) {
     const rows = [];
+
     patterns.forEach((pattern, i) => {
         rows.push(
             <TableRow
@@ -56,13 +69,40 @@ function createTableRows(
                 <TableCell component="th" scope="row">
                     {generatePatternDots(pattern)}
                 </TableCell>
-                <TableCell align="right">
+                <TableCell
+                    sx={{
+                        display: "flex",
+                        flexDirection: "row",
+                        justifyContent: "end",
+                        alignContent: "center",
+                    }}
+                    align="right"
+                >
                     <Edit
-                        sx={{ marginRight: "24px" }}
+                        sx={{
+                            marginRight: "24px",
+                            "&:hover": {
+                                fontSize: 30,
+                                color: "blue",
+                                marginRight: "20px",
+                                marginTop: "-3px",
+                                marginBottom: "-3px",
+                            },
+                        }}
                         onClick={() => editPattern(pattern)}
                     />
                     <PublishedWithChanges
-                        sx={{ marginRight: "24px" }}
+                        sx={{
+                            marginRight: "24px",
+                            "&:hover": {
+                                fontSize: 30,
+                                color: "blue",
+                                marginRight: "20px",
+                                marginLeft: "-2px",
+                                marginTop: "-3px",
+                                marginBottom: "-3px",
+                            },
+                        }}
                         onClick={() => {
                             postUpdatePattern(
                                 pattern,
@@ -71,7 +111,17 @@ function createTableRows(
                         }}
                     />
                     <HighlightOff
-                        sx={{ marginRight: "15px" }}
+                        sx={{
+                            marginRight: "15px",
+                            "&:hover": {
+                                fontSize: 30,
+                                color: "blue",
+                                marginLeft: "-3px",
+                                marginRight: "12px",
+                                marginTop: "-3px",
+                                marginBottom: "-3px",
+                            },
+                        }}
                         onClick={() => {
                             postDeletePattern(pattern).then(
                                 updateSavedPatterns
