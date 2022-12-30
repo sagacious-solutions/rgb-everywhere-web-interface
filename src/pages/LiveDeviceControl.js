@@ -14,7 +14,7 @@ function sendColorUpdate(color) {
     socket.emit("set_color", color);
 }
 
-function CreateColorSliders(props) {
+function LiveDeviceControl(props) {
     const { postColorRequest } = useServerCommunication();
     const [state, setState] = useState({
         rgb: [127, 127, 127],
@@ -157,4 +157,4 @@ function CreateColorSliders(props) {
     );
 }
 
-export default CreateColorSliders;
+export default LiveDeviceControl;

@@ -31,7 +31,7 @@ import "reactjs-popup/dist/index.css";
 import AddNewDevicePopup from "./pages/components/AddNewDevicePopup";
 import SelectAnimation from "./pages/SelectAnimation";
 import SetSolidPreset from "./pages/SetSolidPreset";
-import CreateColorSliders from "./pages/CreateColorSliders";
+import LiveDeviceControl from "./pages/LiveDeviceControl";
 import CustomPattern from "./pages/CustomPattern";
 import useApplicationData from "./hooks/useApplicationData";
 import { getNameFromDropDownLabel } from "./helpers";
@@ -123,13 +123,12 @@ export default function Navigation() {
     const [pages, setPages] = React.useState({
         animation: <SelectAnimation currentDevice={currentDevice} />,
         SetSolidPreset: <SetSolidPreset currentDevice={currentDevice} />,
-        CreateColorSliders: (
-            <CreateColorSliders currentDevice={currentDevice} />
-        ),
+        LiveDeviceControl: <LiveDeviceControl currentDevice={currentDevice} />,
         CustomPattern: (
             <CustomPattern
                 currentDevice={currentDevice}
                 savedPatterns={savedPatterns}
+                updateSavedPatterns={updateSavedPatterns}
             />
         ),
     });
@@ -146,8 +145,8 @@ export default function Navigation() {
             ),
             animation: <SelectAnimation currentDevice={currentDevice} />,
             SetSolidPreset: <SetSolidPreset currentDevice={currentDevice} />,
-            CreateColorSliders: (
-                <CreateColorSliders
+            LiveDeviceControl: (
+                <LiveDeviceControl
                     currentDevice={currentDevice}
                     currentDeviceName={currentDeviceName}
                 />
@@ -312,15 +311,15 @@ export default function Navigation() {
                     </ListItem>
                     <ListItem
                         button
-                        key={"CreateColorSliders"}
+                        key={"LiveDeviceControl"}
                         onClick={() => {
-                            setPage("CreateColorSliders");
+                            setPage("LiveDeviceControl");
                         }}
                     >
                         <ListItemIcon>
                             <Tune />
                         </ListItemIcon>
-                        <ListItemText primary={"Create Color"} />
+                        <ListItemText primary={"Live Device Control"} />
                     </ListItem>
                     <ListItem
                         button
