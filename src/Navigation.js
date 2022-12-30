@@ -31,11 +31,10 @@ import "reactjs-popup/dist/index.css";
 import AddNewDevicePopup from "./pages/components/AddNewDevicePopup";
 import SelectAnimation from "./pages/SelectAnimation";
 import SetSolidPreset from "./pages/SetSolidPreset";
-import CreateColorSliders from "./pages/CreateColorSliders";
+import LiveDeviceControl from "./pages/LiveDeviceControl";
 import CustomPattern from "./pages/CustomPattern";
-
-import useServerCommunication from "./serverCommunication";
 import useApplicationData from "./hooks/useApplicationData";
+import { getNameFromDropDownLabel } from "./helpers";
 const drawerWidth = 240;
 
 const useStyles = makeStyles((theme) => ({
@@ -105,6 +104,8 @@ export default function Navigation() {
     const {
         currentDevice,
         setCurrentDevice,
+        currentDeviceName,
+        setCurrentDeviceName,
         devices,
         savedPatterns,
         updateSavedPatterns,
@@ -122,13 +123,12 @@ export default function Navigation() {
     const [pages, setPages] = React.useState({
         animation: <SelectAnimation currentDevice={currentDevice} />,
         SetSolidPreset: <SetSolidPreset currentDevice={currentDevice} />,
-        CreateColorSliders: (
-            <CreateColorSliders currentDevice={currentDevice} />
-        ),
+        LiveDeviceControl: <LiveDeviceControl currentDevice={currentDevice} />,
         CustomPattern: (
             <CustomPattern
                 currentDevice={currentDevice}
                 savedPatterns={savedPatterns}
+                updateSavedPatterns={updateSavedPatterns}
             />
         ),
     });
@@ -145,8 +145,11 @@ export default function Navigation() {
             ),
             animation: <SelectAnimation currentDevice={currentDevice} />,
             SetSolidPreset: <SetSolidPreset currentDevice={currentDevice} />,
-            CreateColorSliders: (
-                <CreateColorSliders currentDevice={currentDevice} />
+            LiveDeviceControl: (
+                <LiveDeviceControl
+                    currentDevice={currentDevice}
+                    currentDeviceName={currentDeviceName}
+                />
             ),
         });
     }, [savedPatterns, currentDevice]);
@@ -176,6 +179,9 @@ export default function Navigation() {
         setDropdownList(deviceOptions);
         if (dropdownList.length) {
             setCurrentDevice(dropdownList[0].value);
+            setCurrentDeviceName(
+                getNameFromDropDownLabel(dropdownList[0].label)
+            );
         }
     }, [devices]);
 
@@ -193,6 +199,9 @@ export default function Navigation() {
                         return;
                     }
                     setCurrentDevice(dropValue.value);
+                    setCurrentDeviceName(
+                        getNameFromDropDownLabel(dropValue.label)
+                    );
                 }}
                 placeholder="Select a Device"
             />
@@ -302,15 +311,15 @@ export default function Navigation() {
                     </ListItem>
                     <ListItem
                         button
-                        key={"CreateColorSliders"}
+                        key={"LiveDeviceControl"}
                         onClick={() => {
-                            setPage("CreateColorSliders");
+                            setPage("LiveDeviceControl");
                         }}
                     >
                         <ListItemIcon>
                             <Tune />
                         </ListItemIcon>
-                        <ListItemText primary={"Create Color"} />
+                        <ListItemText primary={"Live Device Control"} />
                     </ListItem>
                     <ListItem
                         button

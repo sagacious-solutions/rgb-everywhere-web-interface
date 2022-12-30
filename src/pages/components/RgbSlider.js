@@ -1,6 +1,5 @@
 import * as React from "react";
 import VerticalSlider from "./VerticalSlider";
-import { useState, useEffect } from "react";
 import "./RgbSlider.css";
 
 let classNames = require("classnames");
@@ -8,23 +7,31 @@ let classNames = require("classnames");
 export default function RgbSlider(props) {
     let sldrGrpClass = classNames({ sliderGroup: true });
     const sliderSettings = { min: 0, max: 255 };
-    const headerCss = { color: "black" };
-    const [red, setRed] = useState(127);
-    const [green, setGreen] = useState(127);
-    const [blue, setBlue] = useState(127);
-    const onChange = props.onChange;
-
-    useEffect(() => {
-        onChange([red, green, blue]);
-    }, [red, green, blue]);
 
     return (
         <div>
-            <h1 style={headerCss}>Choose Your Color</h1>
             <div className={sldrGrpClass}>
-                <VerticalSlider setColor={setRed} {...sliderSettings} />
-                <VerticalSlider setColor={setGreen} {...sliderSettings} />
-                <VerticalSlider setColor={setBlue} {...sliderSettings} />
+                <VerticalSlider
+                    setColor={(val) => {
+                        props.onChange([val, props.rgb[1], props.rgb[2]]);
+                    }}
+                    value={props.rgb[0]}
+                    {...sliderSettings}
+                />
+                <VerticalSlider
+                    setColor={(val) => {
+                        props.onChange([props.rgb[0], val, props.rgb[2]]);
+                    }}
+                    value={props.rgb[1]}
+                    {...sliderSettings}
+                />
+                <VerticalSlider
+                    setColor={(val) => {
+                        props.onChange([props.rgb[0], props.rgb[1], val]);
+                    }}
+                    value={props.rgb[2]}
+                    {...sliderSettings}
+                />
             </div>
         </div>
     );

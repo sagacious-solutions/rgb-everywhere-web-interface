@@ -1,5 +1,4 @@
 import * as React from "react";
-import { useState } from "react";
 import Box from "@mui/material/Box";
 import Slider from "@mui/material/Slider";
 
@@ -9,13 +8,6 @@ export default function VerticalSlider(props) {
             event.preventDefault();
         }
     }
-    const DEFAULT_VALUE = 127;
-    const [value, setValue] = useState(DEFAULT_VALUE);
-
-    const changeValue = (event, value) => {
-        setValue(value);
-        props.setColor(value);
-    };
 
     return (
         <Box sx={{ height: 300 }}>
@@ -26,13 +18,12 @@ export default function VerticalSlider(props) {
                     },
                 }}
                 orientation="vertical"
-                defaultValue={127}
                 valueLabelDisplay="on"
                 onKeyDown={preventHorizontalKeyboardNavigation}
                 min={props.min}
                 max={props.max}
-                value={value}
-                onChange={changeValue}
+                value={props.value}
+                onChange={(_e, val) => props.setColor(val)}
             />
         </Box>
     );
