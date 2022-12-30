@@ -17,9 +17,13 @@ Bunny for scale.
  - Socket.io
  - Dotenv
  - Material UI
- - SQLAlchemy
+ - React-Color
+ - Python
  - Flask
+ - SQLAlchemy
  - Windows Subsystem for Linux
+ - Debian Linux
+ - WS281x Lighting Strips
  - Raspberry Pi 4
  - 2 Raspberry Pi Zero 2's
  - Ender 3 Pro V2 for Printing Screen Mount
@@ -31,8 +35,7 @@ Bunny for scale.
 </p>
 
 # Live connection via Websockets
-The set custom color page allows for changing the colors with the sliders and seeing
-the tree change instantly as you move the controls.
+The live device control page allows for live control of any device with a socket connection. Once connected you will see the any color changes appear on the device instantly.
 
 <p align="center">
     <img  src="./docs/socket_slider_demo.gif" width="75%" />
