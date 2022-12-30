@@ -7,11 +7,9 @@ let classNames = require("classnames");
 export default function RgbSlider(props) {
     let sldrGrpClass = classNames({ sliderGroup: true });
     const sliderSettings = { min: 0, max: 255 };
-    const headerCss = { color: "black" };
 
     return (
         <div>
-            <h1 style={headerCss}>Choose Your Color</h1>
             <div className={sldrGrpClass}>
                 <VerticalSlider
                     setColor={(val) => {
