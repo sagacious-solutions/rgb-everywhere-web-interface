@@ -1,38 +1,39 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import clsx from "clsx";
 import { makeStyles, useTheme } from "@material-ui/core/styles";
-import Drawer from "@material-ui/core/Drawer";
-import AppBar from "@material-ui/core/AppBar";
-import Toolbar from "@material-ui/core/Toolbar";
-import List from "@material-ui/core/List";
-import Box from "@mui/material/Box";
-import CssBaseline from "@material-ui/core/CssBaseline";
-import Typography from "@material-ui/core/Typography";
-import Divider from "@material-ui/core/Divider";
-import IconButton from "@material-ui/core/IconButton";
-import SettingsIcon from "@mui/icons-material/Settings";
-import MenuIcon from "@material-ui/icons/Menu";
-import ChevronLeftIcon from "@material-ui/icons/ChevronLeft";
-import ChevronRightIcon from "@material-ui/icons/ChevronRight";
-import ListItem from "@material-ui/core/ListItem";
-import ListItemIcon from "@material-ui/core/ListItemIcon";
-import ListItemText from "@material-ui/core/ListItemText";
-import Palette from "@material-ui/icons/Palette";
-import TextureIcon from "@mui/icons-material/Texture";
-import TuneIcon from "@mui/icons-material/Tune";
-import TrafficIcon from "@material-ui/icons/Traffic";
-import Button from "@mui/material/Button";
+import {
+    Drawer,
+    AppBar,
+    Toolbar,
+    List,
+    CssBaseline,
+    Typography,
+    Divider,
+    IconButton,
+    ListItem,
+    ListItemIcon,
+    ListItemText,
+} from "@material-ui/core/";
+import {
+    Settings,
+    Tune,
+    Traffic,
+    Palette,
+    ChevronRight,
+    ChevronLeft,
+    Texture,
+    Menu,
+} from "@mui/icons-material";
+import { Box, Button } from "@mui/material";
 import Dropdown from "react-dropdown";
 import "react-dropdown/style.css";
 import "reactjs-popup/dist/index.css";
 import AddNewDevicePopup from "./pages/components/AddNewDevicePopup";
-// Pages
 import SelectAnimation from "./pages/SelectAnimation";
 import SetSolidPreset from "./pages/SetSolidPreset";
 import CreateColorSliders from "./pages/CreateColorSliders";
 import CustomPattern from "./pages/CustomPattern";
 
-import { DictToDeviceList } from "./DisplayDevice";
 import useServerCommunication from "./serverCommunication";
 import useApplicationData from "./hooks/useApplicationData";
 const drawerWidth = 240;
@@ -101,46 +102,71 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function Navigation() {
-    const { appState, setCurrentDevice, setDevices } = useApplicationData();
+    const {
+        currentDevice,
+        setCurrentDevice,
+        devices,
+        savedPatterns,
+        updateSavedPatterns,
+        updateDeviceList,
+    } = useApplicationData();
     const classes = useStyles();
     const theme = useTheme();
-    const [dropdownList, setDropdownList] = React.useState([]);
-    const [open, setOpen] = React.useState(false);
-    const [page, setPage] = React.useState("animation");
-    const [newDevicePopupOpen, setNewDevicePopupOpen] = React.useState(false);
-    const { getDeviceList } = useServerCommunication();
-    const [modifyExisting, setModifyExisting] = React.useState(false);
+    const [dropdownList, setDropdownList] = useState([]);
+    const [drawerOpen, setDrawerOpen] = useState(false);
+    const [page, setPage] = useState("animation");
+    const [newDevicePopupOpen, setNewDevicePopupOpen] = useState(false);
+    const [modifyExistingDevice, setModifyExistingDevice] = useState(false);
     const ADD_NEW_DEVICE_OPTION = "Add New Device..";
 
-    const pages = {
-        animation: <SelectAnimation currentDevice={appState.currentDevice} />,
-        SetSolidPreset: (
-            <SetSolidPreset currentDevice={appState.currentDevice} />
-        ),
+    const [pages, setPages] = React.useState({
+        animation: <SelectAnimation currentDevice={currentDevice} />,
+        SetSolidPreset: <SetSolidPreset currentDevice={currentDevice} />,
         CreateColorSliders: (
-            <CreateColorSliders currentDevice={appState.currentDevice} />
+            <CreateColorSliders currentDevice={currentDevice} />
         ),
-        CustomPattern: <CustomPattern currentDevice={appState.currentDevice} />,
-    };
+        CustomPattern: (
+            <CustomPattern
+                currentDevice={currentDevice}
+                savedPatterns={savedPatterns}
+            />
+        ),
+    });
+
+    useEffect(() => {
+        setPages({
+            ...pages,
+            CustomPattern: (
+                <CustomPattern
+                    currentDevice={currentDevice}
+                    savedPatterns={savedPatterns}
+                    updateSavedPatterns={updateSavedPatterns}
+                />
+            ),
+            animation: <SelectAnimation currentDevice={currentDevice} />,
+            SetSolidPreset: <SetSolidPreset currentDevice={currentDevice} />,
+            CreateColorSliders: (
+                <CreateColorSliders currentDevice={currentDevice} />
+            ),
+        });
+    }, [savedPatterns, currentDevice]);
 
     const handleDrawerOpen = () => {
-        setOpen(true);
+        setDrawerOpen(true);
     };
 
     const handleDrawerClose = () => {
-        setOpen(false);
+        setDrawerOpen(false);
     };
 
     useEffect(() => {
         if (!newDevicePopupOpen) {
-            getDeviceList().then((res) => {
-                setDevices(DictToDeviceList(res.data));
-            });
+            updateDeviceList();
         }
     }, [newDevicePopupOpen]);
 
     useEffect(() => {
-        const deviceOptions = appState.devices.map((d) => {
+        const deviceOptions = devices.map((d) => {
             return {
                 value: d.ip_address,
                 label: `${d.name} - ${d.ip_address}`,
@@ -151,17 +177,17 @@ export default function Navigation() {
         if (dropdownList.length) {
             setCurrentDevice(dropdownList[0].value);
         }
-    }, [appState.devices]);
+    }, [devices]);
 
     let dropdown =
-        appState.devices.length > 0 ? (
+        devices.length > 0 ? (
             <Dropdown
                 className={classes.dropDown}
                 options={dropdownList}
-                value={appState.currentDevice}
+                value={currentDevice}
                 onChange={(dropValue) => {
                     if (dropValue.value == ADD_NEW_DEVICE_OPTION) {
-                        setModifyExisting(false);
+                        setModifyExistingDevice(false);
                         setNewDevicePopupOpen(true);
                         dropValue.value = "";
                         return;
@@ -180,7 +206,7 @@ export default function Navigation() {
             <AppBar
                 position="fixed"
                 className={clsx(classes.appBar, {
-                    [classes.appBarShift]: open,
+                    [classes.appBarShift]: drawerOpen,
                 })}
             >
                 <Toolbar>
@@ -190,10 +216,10 @@ export default function Navigation() {
                         onClick={handleDrawerOpen}
                         edge="start"
                         className={clsx(classes.menuButton, {
-                            [classes.hide]: open,
+                            [classes.hide]: drawerOpen,
                         })}
                     >
-                        <MenuIcon />
+                        <Menu />
                     </IconButton>
                     <Typography variant="h6" noWrap>
                         RGB Everywhere
@@ -205,9 +231,9 @@ export default function Navigation() {
                     <Box sx={{ flexGrow: 0.025 }} />
                     {dropdown}
                     <AddNewDevicePopup
-                        modifyExisting={modifyExisting}
-                        currentDevice={appState.currentDevice}
-                        devices={appState.devices}
+                        modifyExisting={modifyExistingDevice}
+                        currentDevice={currentDevice}
+                        devices={devices}
                         open={newDevicePopupOpen}
                         closePopup={() => setNewDevicePopupOpen(false)}
                     />
@@ -218,33 +244,33 @@ export default function Navigation() {
                             color: "white",
                         }}
                         onClick={() => {
-                            if (appState.currentDevice) setModifyExisting(true);
+                            if (currentDevice) setModifyExistingDevice(true);
                             setNewDevicePopupOpen(!newDevicePopupOpen);
                         }}
                     >
-                        <SettingsIcon />
+                        <Settings />
                     </Button>
                 </Toolbar>
             </AppBar>
             <Drawer
                 variant="permanent"
                 className={clsx(classes.drawer, {
-                    [classes.drawerOpen]: open,
-                    [classes.drawerClose]: !open,
+                    [classes.drawerOpen]: drawerOpen,
+                    [classes.drawerClose]: !drawerOpen,
                 })}
                 classes={{
                     paper: clsx({
-                        [classes.drawerOpen]: open,
-                        [classes.drawerClose]: !open,
+                        [classes.drawerOpen]: drawerOpen,
+                        [classes.drawerClose]: !drawerOpen,
                     }),
                 }}
             >
                 <div className={classes.toolbar}>
                     <IconButton onClick={handleDrawerClose}>
                         {theme.direction === "rtl" ? (
-                            <ChevronRightIcon />
+                            <ChevronRight />
                         ) : (
-                            <ChevronLeftIcon />
+                            <ChevronLeft />
                         )}
                     </IconButton>
                 </div>
@@ -258,7 +284,7 @@ export default function Navigation() {
                         }}
                     >
                         <ListItemIcon>
-                            <TrafficIcon />
+                            <Traffic />
                         </ListItemIcon>
                         <ListItemText primary={"Animated Patterns"} />
                     </ListItem>
@@ -282,7 +308,7 @@ export default function Navigation() {
                         }}
                     >
                         <ListItemIcon>
-                            <TuneIcon />
+                            <Tune />
                         </ListItemIcon>
                         <ListItemText primary={"Create Color"} />
                     </ListItem>
@@ -294,7 +320,7 @@ export default function Navigation() {
                         }}
                     >
                         <ListItemIcon>
-                            <TextureIcon />
+                            <Texture />
                         </ListItemIcon>
                         <ListItemText primary={"DIY Patterns"} />
                     </ListItem>

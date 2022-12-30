@@ -1,30 +1,45 @@
 import { useEffect, useState } from "react";
 import BasicButton from "./components/BasicButton";
+import PatternTable from "./components/PatternTable";
 import Avatar from "@mui/material/Avatar";
 import Stack from "@mui/material/Stack";
 import useServerCommunication from "../serverCommunication";
-import { SketchPicker } from "react-color";
+import { SketchPicker, HuePicker } from "react-color";
+import { Button } from "@mui/material";
+import { getRgb, patternToRgbArray, colorToCssRgb } from "../helpers";
 
-function getRgb(color) {
-    const r = color.rgb.r;
-    const g = color.rgb.g;
-    const b = color.rgb.b;
-    return [r, g, b];
-}
-
-function generatePatternDots(pattern) {
+function generatePatternDots(pattern, selectedDot, setSelectedDot) {
     let avatars = [];
+
+    const selectedStyle = {
+        border: "5px solid black",
+    };
 
     pattern.forEach((color, index) => {
         avatars.push(
-            <div style={{ marginTop: "0.33em" }}>
+            <div
+                key={`dot-spacing-div-${index}`}
+                style={{ marginTop: "0.33em" }}
+            >
                 <Avatar
-                    key={`color-circle-${index}`}
+                    key={`circle-dot-${index}`}
                     sx={{
-                        backgroundColor: color.hex,
+                        backgroundColor: colorToCssRgb(color),
                         marginLeft: index ? "0px" : "15px",
+                        ...(index == selectedDot ? selectedStyle : {}),
+                        "&:hover": {
+                            ...selectedStyle,
+                        },
                     }}
                     children={""}
+                    onClick={() => {
+                        // If current dot is selected, deselect it
+                        if (selectedDot == index) {
+                            setSelectedDot(-1);
+                            return;
+                        }
+                        setSelectedDot(index);
+                    }}
                 />
             </div>
         );
@@ -34,61 +49,109 @@ function generatePatternDots(pattern) {
 }
 
 function CustomPattern(props) {
-    const { postColorRequest, postCustomPatternRequest } =
+    const { postColorRequest, postCustomPatternRequest, postNewPattern } =
         useServerCommunication();
     const [pattern, setPattern] = useState([]);
     const [color, setColor] = useState({ rgb: { r: 50, g: 0, b: 0 } });
     const [rgb, setRgb] = useState(0);
+    const [selectedDot, setSelectedDot] = useState(-1);
 
     const handleColorChange = (color, _event) => {
         setColor(color);
     };
 
-    
-    function sendPatternToServer(pattern) {
-        const rgbList = [];
+    function setCurrentDeviceToPattern(pattern) {
+        const rgbList = patternToRgbArray(pattern);
 
-        pattern.forEach((color) => {
-            rgbList.push([color.rgb.r, color.rgb.g, color.rgb.b]);
-        });
         postCustomPatternRequest(rgbList, props.currentDevice);
     }
 
     useEffect(() => {
+        setSelectedDot(-1);
+    }, [pattern]);
+
+    useEffect(() => {
         setRgb(getRgb(color));
-        console.log(color);
     }, [color]);
 
     return (
         <div>
             <h2>Make your own pattern.</h2>
-            <div style={{ display: "flex", flexDirection: "column" }}>
-                <SketchPicker onChange={handleColorChange} color={color} />
-                <BasicButton
-                    style={{ width: "221px", backgroundColor: "#48AAF1" }}
-                    buttonText={"Preview Color"}
-                    onClick={() => postColorRequest(rgb, props.currentDevice)}
-                />
-                <BasicButton
-                    style={{ width: "221px" }}
-                    buttonText={"Add color to Pattern"}
-                    onClick={() => setPattern([...pattern, color])}
-                />
-            </div>
-            <Stack
+            <div
                 style={{
                     display: "flex",
-                    marginTop: 50,
-                    height: "4em",
-                    backgroundColor: "grey",
-                    borderRadius: "25px",
-                    border: "3px solid black",
+                    flexDirection: "row",
+                    justifyContent: "space-around",
                 }}
-                direction="row"
-                spacing={2}
             >
-                {generatePatternDots(pattern)}
-            </Stack>
+                <div style={{ display: "flex", flexDirection: "column" }}>
+                    <SketchPicker onChange={handleColorChange} color={color} />
+                    <BasicButton
+                        style={{ width: "221px", backgroundColor: "#48AAF1" }}
+                        buttonText={"Preview Color"}
+                        onClick={() =>
+                            postColorRequest(rgb, props.currentDevice)
+                        }
+                    />
+                    <BasicButton
+                        style={{
+                            width: "221px",
+                            backgroundColor: selectedDot >= 0 ? "red" : "blue",
+                        }}
+                        buttonText={
+                            selectedDot >= 0
+                                ? "Replace Color"
+                                : "Add color to Pattern"
+                        }
+                        onClick={() => {
+                            if (selectedDot >= 0) {
+                                const newPattern = pattern;
+                                newPattern[selectedDot] = color;
+                                setPattern([...newPattern]);
+                                return;
+                            }
+                            setPattern([...pattern, color]);
+                        }}
+                    />
+                </div>
+
+                <PatternTable
+                    patterns={props.savedPatterns}
+                    updateSavedPatterns={() => props.updateSavedPatterns()}
+                    editPattern={setPattern}
+                    currentPattern={pattern}
+                    setCurrentDeviceToPattern={setCurrentDeviceToPattern}
+                />
+            </div>
+            <div
+                style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "center",
+                    marginTop: "75px",
+                }}
+            >
+                <HuePicker
+                    width="90%"
+                    onChange={handleColorChange}
+                    color={color}
+                />
+                <Stack
+                    style={{
+                        display: "flex",
+                        marginTop: 50,
+                        width: "90%",
+                        height: "4em",
+                        backgroundColor: "grey",
+                        borderRadius: "25px",
+                        border: "3px solid black",
+                    }}
+                    direction="row"
+                    spacing={2}
+                >
+                    {generatePatternDots(pattern, selectedDot, setSelectedDot)}
+                </Stack>
+            </div>
             <div
                 style={{
                     marginTop: 50,
@@ -99,12 +162,32 @@ function CustomPattern(props) {
                 <BasicButton
                     style={{}}
                     buttonText={"Set device to Pattern"}
-                    onClick={() => sendPatternToServer(pattern)}
+                    onClick={() => setCurrentDeviceToPattern(pattern)}
                 />
+                <Button
+                    sx={{
+                        background: "blue",
+                        color: "white",
+                        width: "200px",
+                        "&:hover": {
+                            background: "green",
+                        },
+                    }}
+                    onClick={() => {
+                        postNewPattern(patternToRgbArray(pattern)).then(() => {
+                            props.updateSavedPatterns();
+                        });
+                    }}
+                >
+                    Save Pattern
+                </Button>
                 <BasicButton
                     style={{}}
                     buttonText={"Clear Pattern"}
-                    onClick={() => setPattern([])}
+                    onClick={() => {
+                        setSelectedDot(-1);
+                        setPattern([]);
+                    }}
                 />
             </div>
         </div>

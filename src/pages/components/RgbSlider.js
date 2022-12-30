@@ -16,7 +16,7 @@ export default function RgbSlider(props) {
 
     useEffect(() => {
         onChange([red, green, blue]);
-    }, [red, green, blue, onChange]);
+    }, [red, green, blue]);
 
     return (
         <div>

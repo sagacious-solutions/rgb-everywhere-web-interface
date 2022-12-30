@@ -15,6 +15,7 @@ Bunny for scale.
  - CSS
  - React JS
  - Socket.io
+ - Dotenv
  - Material UI
  - SQLAlchemy
  - Flask
@@ -39,9 +40,14 @@ the tree change instantly as you move the controls.
 <br>
 
 # Create your own light string patterns
-On this page you can create your own light string patterns. By hitting preview color, you can see what it looks like on the tree before commiting to it. Once you hit "Set Tree to Pattern" it will repeat that pattern across the string of lights.
+On this page you can create your own light string patterns. By hitting preview color, you can see what it looks like on the tree before commiting to it. Once you hit "Set Device to Pattern" it will repeat that pattern across the string of lights.
 
-<img src="./docs/choose_pattern_page.png" width="50%" />
+The edit button allows you to edit an existing saved pattern. Once edited you can hit the replace icon and it will update the pattern in the database. There's also a save button at the bottom to create new patterns as well as a delete button in the table to get rid of patterns your bored of.
+
+<br>
+<p align="center">
+    <img  src="./docs/pattern_demo.gif" width="75%" />
+</p>
 <br>
 <br>
 
