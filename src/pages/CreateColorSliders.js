@@ -55,6 +55,10 @@ function CreateColorSliders(props) {
         });
     };
 
+    useEffect(() => {
+        setState({ ...state, socketEnabled: false });
+    }, [props.currentDevice]);
+
     const setColorButton = (
         <BasicButton
             onClick={() => postColorRequest(state.rgb, props.currentDevice)}
@@ -64,7 +68,7 @@ function CreateColorSliders(props) {
             }}
         />
     );
-    const disconnectTreeButton = (
+    const disconnectDeviceButton = (
         <BasicButton
             onClick={() => {
                 setState({ ...state, socketEnabled: false });
@@ -74,7 +78,7 @@ function CreateColorSliders(props) {
         />
     );
     const setColorOrDisconnectButton = state.socketEnabled
-        ? disconnectTreeButton
+        ? disconnectDeviceButton
         : setColorButton;
 
     useEffect(() => {
