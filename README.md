@@ -34,7 +34,9 @@ Bunny for scale.
 The set custom color page allows for changing the colors with the sliders and seeing
 the tree change instantly as you move the controls.
 
-<img src="./docs/socket_connection.png" width="50%" />
+<p align="center">
+    <img  src="./docs/socket_slider_demo.gif" width="75%" />
+</p>
 
 <br>
 <br>
