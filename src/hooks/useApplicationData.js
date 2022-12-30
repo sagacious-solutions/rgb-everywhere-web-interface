@@ -6,6 +6,7 @@ import { DictToDeviceList } from "../DisplayDevice";
 export default function useApplicationData() {
     const [devices, setDevices] = useState([]);
     const [currentDevice, setCurrentDevice] = useState(null);
+    const [currentDeviceName, setCurrentDeviceName] = useState(null);
     const [savedPatterns, setSavedPatterns] = useState(null);
     const { getPatternsList, getDeviceList } = useServerCommunication();
 
@@ -32,6 +33,8 @@ export default function useApplicationData() {
     return {
         currentDevice,
         setCurrentDevice,
+        currentDeviceName,
+        setCurrentDeviceName,
         devices,
         setDevices,
         savedPatterns,

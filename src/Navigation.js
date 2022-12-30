@@ -33,9 +33,8 @@ import SelectAnimation from "./pages/SelectAnimation";
 import SetSolidPreset from "./pages/SetSolidPreset";
 import CreateColorSliders from "./pages/CreateColorSliders";
 import CustomPattern from "./pages/CustomPattern";
-
-import useServerCommunication from "./serverCommunication";
 import useApplicationData from "./hooks/useApplicationData";
+import { getNameFromDropDownLabel } from "./helpers";
 const drawerWidth = 240;
 
 const useStyles = makeStyles((theme) => ({
@@ -105,6 +104,8 @@ export default function Navigation() {
     const {
         currentDevice,
         setCurrentDevice,
+        currentDeviceName,
+        setCurrentDeviceName,
         devices,
         savedPatterns,
         updateSavedPatterns,
@@ -146,7 +147,10 @@ export default function Navigation() {
             animation: <SelectAnimation currentDevice={currentDevice} />,
             SetSolidPreset: <SetSolidPreset currentDevice={currentDevice} />,
             CreateColorSliders: (
-                <CreateColorSliders currentDevice={currentDevice} />
+                <CreateColorSliders
+                    currentDevice={currentDevice}
+                    currentDeviceName={currentDeviceName}
+                />
             ),
         });
     }, [savedPatterns, currentDevice]);
@@ -176,6 +180,9 @@ export default function Navigation() {
         setDropdownList(deviceOptions);
         if (dropdownList.length) {
             setCurrentDevice(dropdownList[0].value);
+            setCurrentDeviceName(
+                getNameFromDropDownLabel(dropdownList[0].label)
+            );
         }
     }, [devices]);
 
@@ -193,6 +200,9 @@ export default function Navigation() {
                         return;
                     }
                     setCurrentDevice(dropValue.value);
+                    setCurrentDeviceName(
+                        getNameFromDropDownLabel(dropValue.label)
+                    );
                 }}
                 placeholder="Select a Device"
             />

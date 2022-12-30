@@ -44,4 +44,16 @@ function colorToCssRgb(color) {
     return `rgb(${color.rgb.r},${color.rgb.g},${color.rgb.b})`;
 }
 
-export { getRgb, patternToRgbArray, colorToCssRgb };
+/**
+ *
+ * @param {*} value The drop down list label to be parsed
+ * @returns The first part of the label which is the device name
+ */
+function getNameFromDropDownLabel(value) {
+    if (value) {
+        return value.split(" - ")[0];
+    }
+    return null;
+}
+
+export { getRgb, patternToRgbArray, colorToCssRgb, getNameFromDropDownLabel };
