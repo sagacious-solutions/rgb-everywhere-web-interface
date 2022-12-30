@@ -73,7 +73,7 @@ function CreateColorSliders(props) {
             onClick={() => {
                 setState({ ...state, socketEnabled: false });
             }}
-            buttonText={"Disconnect from device."}
+            buttonText={`Disconnect from ${props.currentDeviceName}.`}
             style={{ backgroundColor: `black` }}
         />
     );
@@ -100,7 +100,7 @@ function CreateColorSliders(props) {
     buttonBackground = state.serverUnavailable ? "red" : buttonBackground;
     let connectionButtonText = state.socketEnabled
         ? `Device set to RGB(${rgbString})`
-        : "Start Live Connection";
+        : `Start Live Connection with ${props.currentDeviceName}`;
     connectionButtonText = state.serverUnavailable
         ? "Server Unavailable"
         : connectionButtonText;
