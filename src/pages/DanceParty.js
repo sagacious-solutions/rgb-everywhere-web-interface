@@ -5,47 +5,80 @@ import SpotifyWebApi from "spotify-web-api-js";
 import { useCookies } from "react-cookie";
 import useServerCommunication from "../serverCommunication";
 import spotifyPlaybackData from "../spotifyPlaybackData";
-import MuiMusicPlayer from "./components/MuiMusicPlayer";
+import SpotifyPlayerSmall from "./components/SpotifyPlayerSmall";
+import { Button } from "@material-ui/core";
 
 let spotify = new SpotifyWebApi();
 
 function DanceParty(props) {
-    const [display, setDisplay] = useState(<SpotifyLogin />);
+    const [remoteProgressMs, setRemoteProgressMs] = useState();
+    const [display, setDisplay] = useState(
+        props.currentSpotifyPlayback ? (
+            <SpotifyPlayerSmall
+                currentPlayback={props.currentSpotifyPlayback}
+                updatePlaybackState={updatePlaybackState}
+                remoteProgressMs={remoteProgressMs}
+                pause={() => {
+                    spotify.pause();
+                }}
+            />
+        ) : (
+            <SpotifyLogin />
+        )
+    );
     const [cookies, setCookie, removeCookie] = useCookies();
     const [authToken, setAuthToken] = useState(null);
-    const [currentPlayback, setCurrentPlayback] = useState();
-    const [remoteProgressMs, setRemoteProgressMs] = useState();
     const { postSpotifyVisualizeData } = useServerCommunication();
 
-    function updatePlaybackState() {
-        let currentAlbumId = null;
+    function startDanceParty() {
+        const start_ms = new Date().getTime();
 
+        spotify.getMyCurrentPlaybackState().then((res) => {
+            const trackProgress = res.progress_ms;
+            spotify.getAudioAnalysisForTrack(res.item.id).then((res) => {
+                const analysisData = res;
+                const end = new Date();
+                const lagTimeMs = end.getTime() - start_ms;
+                postSpotifyVisualizeData(
+                    props.currentDevice,
+                    trackProgress,
+                    analysisData,
+                    lagTimeMs
+                );
+            });
+        });
+    }
+
+    function updatePlaybackState() {
         spotify.getMyCurrentPlaybackState().then(
             (res) => {
-                setCurrentPlayback(res);
+                props.setCurrentSpotifyPlayback(res);
             },
-            (err) => {
-                // console.log(err);
-            }
+            (err) => {}
         );
     }
 
     function checkPlaybackChanged() {
         spotify.getMyCurrentPlaybackState().then((res) => {
             setRemoteProgressMs(res.progress_ms);
-            if (res.item.id !== currentPlayback.item.id) {
+            if (res.item.id !== props.currentSpotifyPlayback.item.id) {
                 console.log("Updating playback state");
-                setCurrentPlayback(res);
+                props.setCurrentSpotifyPlayback(res);
             }
         });
     }
 
     useEffect(() => {
-        let currentAlbumId = null;
         let currentTrackId = null;
         let trackProgress = null;
         const start = new Date();
         let start_ms = start.getTime();
+
+        if (props.spotifyAuthToken) {
+            spotify.setAccessToken(props.spotifyAuthToken);
+            updatePlaybackState();
+            setAuthToken(props.spotifyAuthToken);
+        }
 
         if (cookies.spotifyAuthToken) {
             spotify.setAccessToken(cookies.spotifyAuthToken);
@@ -59,17 +92,7 @@ function DanceParty(props) {
         }
 
         // .then(() => {
-        //     spotify.getAudioAnalysisForTrack(currentTrackId).then((res) => {
-        //         const analysisData = res;
-        //         const end = new Date();
-        //         const lagTimeMs = end.getTime() - start_ms;
-        //         postSpotifyVisualizeData(
-        //             props.currentDevice,
-        //             trackProgress,
-        //             analysisData,
-        //             lagTimeMs
-        //         );
-        //     });
+
         // })
     }, [authToken]);
 
@@ -82,21 +105,27 @@ function DanceParty(props) {
         return () => {
             clearInterval(checkRemotePlaybackInterval);
         };
-    }, [currentPlayback]);
+    }, [props.currentSpotifyPlayback]);
 
     useEffect(() => {
-        if (currentPlayback) {
+        if (props.currentSpotifyPlayback) {
             setDisplay(
-                <MuiMusicPlayer
-                    currentPlayback={currentPlayback}
+                <SpotifyPlayerSmall
+                    currentPlayback={props.currentSpotifyPlayback}
                     updatePlaybackState={updatePlaybackState}
                     remoteProgressMs={remoteProgressMs}
+                    pause={() => spotify.pause()}
                 />
             );
         }
-    }, [currentPlayback, remoteProgressMs]);
+    }, [props.currentSpotifyPlayback, remoteProgressMs]);
 
-    return <div>{display}</div>;
+    return (
+        <div>
+            {display}
+            <Button onClick={startDanceParty}>Start the party</Button>
+        </div>
+    );
 }
 
 export default DanceParty;

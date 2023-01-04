@@ -122,7 +122,9 @@ export default function Navigation() {
     const [newDevicePopupOpen, setNewDevicePopupOpen] = useState(false);
     const [modifyExistingDevice, setModifyExistingDevice] = useState(false);
     const ADD_NEW_DEVICE_OPTION = "Add New Device..";
+    const [spotifyAuthToken, setSpotifyAuthToken] = useState(null);
     const [cookies, setCookie] = useCookies(["spotifyAuthToken"]);
+    const [currentSpotifyPlayback, setCurrentSpotifyPlayback] = useState(null);
 
     const [pages, setPages] = React.useState({
         animation: <SelectAnimation currentDevice={currentDevice} />,
@@ -140,7 +142,14 @@ export default function Navigation() {
     useEffect(() => {
         setPages({
             ...pages,
-            DanceParty: <DanceParty currentDevice={currentDevice} />,
+            DanceParty: (
+                <DanceParty
+                    currentDevice={currentDevice}
+                    spotifyAuthToken={spotifyAuthToken}
+                    currentSpotifyPlayback={currentSpotifyPlayback}
+                    setCurrentSpotifyPlayback={setCurrentSpotifyPlayback}
+                />
+            ),
             CustomPattern: (
                 <CustomPattern
                     currentDevice={currentDevice}
@@ -157,7 +166,12 @@ export default function Navigation() {
                 />
             ),
         });
-    }, [savedPatterns, currentDevice]);
+    }, [
+        savedPatterns,
+        currentDevice,
+        spotifyAuthToken,
+        currentSpotifyPlayback,
+    ]);
 
     const url = window.location.href;
     let spotifyAccessToken = null;
@@ -170,9 +184,8 @@ export default function Navigation() {
 
     if (spotifyAccessToken && page != "DanceParty") {
         setCookie("spotifyAuthToken", spotifyAccessToken, { path: "/" });
+        setSpotifyAuthToken(spotifyAccessToken);
         window.history.pushState(null, null, "/");
-    }
-    if (cookies.spotifyAuthToken && page !== "DanceParty") {
         setPage("DanceParty");
     }
 
