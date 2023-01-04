@@ -1,6 +1,5 @@
 import React from "react";
 import { makeStyles } from "@material-ui/core/styles";
-import { loginUrl } from "../../spotify";
 
 const useStyles = makeStyles({
     login: {
@@ -40,8 +39,17 @@ var redirect_uri = "https://localhost:3000/";
 // random text
 var state = "solkjngfposdjngfposndf";
 
-var scope =
-    "user-read-private user-read-email user-read-playback-state user-modify-playback-state user-read-currently-playing";
+var scopes = [
+    "user-read-private",
+    "user-read-email",
+    "user-read-playback-state",
+    "user-modify-playback-state",
+    "user-read-currently-playing",
+    "streaming",
+    "app-remote-control",
+];
+
+let scope = scopes.join(" ");
 
 var url = "https://accounts.spotify.com/authorize";
 url += "?response_type=token";
