@@ -26,7 +26,7 @@ function generatePatternDots(pattern, selectedDot, setSelectedDot) {
                     sx={{
                         backgroundColor: colorToCssRgb(color),
                         marginLeft: index ? "0px" : "15px",
-                        ...(index == selectedDot ? selectedStyle : {}),
+                        ...(index === selectedDot ? selectedStyle : {}),
                         "&:hover": {
                             ...selectedStyle,
                         },
@@ -34,7 +34,7 @@ function generatePatternDots(pattern, selectedDot, setSelectedDot) {
                     children={""}
                     onClick={() => {
                         // If current dot is selected, deselect it
-                        if (selectedDot == index) {
+                        if (selectedDot === index) {
                             setSelectedDot(-1);
                             return;
                         }
