@@ -23,6 +23,7 @@ import {
     ChevronLeft,
     Texture,
     Menu,
+    Nightlife,
 } from "@mui/icons-material";
 import { Box, Button } from "@mui/material";
 import Dropdown from "react-dropdown";
@@ -33,8 +34,10 @@ import SelectAnimation from "./pages/SelectAnimation";
 import SetSolidPreset from "./pages/SetSolidPreset";
 import LiveDeviceControl from "./pages/LiveDeviceControl";
 import CustomPattern from "./pages/CustomPattern";
+import DanceParty from "./pages/DanceParty";
 import useApplicationData from "./hooks/useApplicationData";
 import { getNameFromDropDownLabel } from "./helpers";
+import { useCookies } from "react-cookie";
 const drawerWidth = 240;
 
 const useStyles = makeStyles((theme) => ({
@@ -119,6 +122,7 @@ export default function Navigation() {
     const [newDevicePopupOpen, setNewDevicePopupOpen] = useState(false);
     const [modifyExistingDevice, setModifyExistingDevice] = useState(false);
     const ADD_NEW_DEVICE_OPTION = "Add New Device..";
+    const [cookies, setCookie] = useCookies(["spotifyAuthToken"]);
 
     const [pages, setPages] = React.useState({
         animation: <SelectAnimation currentDevice={currentDevice} />,
@@ -136,6 +140,7 @@ export default function Navigation() {
     useEffect(() => {
         setPages({
             ...pages,
+            DanceParty: <DanceParty currentDevice={currentDevice} />,
             CustomPattern: (
                 <CustomPattern
                     currentDevice={currentDevice}
@@ -153,6 +158,23 @@ export default function Navigation() {
             ),
         });
     }, [savedPatterns, currentDevice]);
+
+    const url = window.location.href;
+    let spotifyAccessToken = null;
+
+    if (url.includes("access_token=")) {
+        spotifyAccessToken = url
+            .split("access_token=")[1]
+            .split("&token_type")[0];
+    }
+
+    if (spotifyAccessToken && page != "DanceParty") {
+        setCookie("spotifyAuthToken", spotifyAccessToken, { path: "/" });
+        window.history.pushState(null, null, "/");
+    }
+    if (cookies.spotifyAuthToken && page !== "DanceParty") {
+        setPage("DanceParty");
+    }
 
     const handleDrawerOpen = () => {
         setDrawerOpen(true);
@@ -332,6 +354,18 @@ export default function Navigation() {
                             <Texture />
                         </ListItemIcon>
                         <ListItemText primary={"DIY Patterns"} />
+                    </ListItem>
+                    <ListItem
+                        button
+                        key={"DanceParty"}
+                        onClick={() => {
+                            setPage("DanceParty");
+                        }}
+                    >
+                        <ListItemIcon>
+                            <Nightlife />
+                        </ListItemIcon>
+                        <ListItemText primary={"Dance Party"} />
                     </ListItem>
                 </List>
             </Drawer>
