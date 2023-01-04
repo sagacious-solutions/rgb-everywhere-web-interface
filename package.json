@@ -19,6 +19,7 @@
     "pg-hstore": "^2.3.4",
     "react": "^18.2.0",
     "react-color": "^2.19.3",
+    "react-cookie": "^4.1.1",
     "react-dom": "^18.2.0",
     "react-dropdown": "^1.11.0",
     "react-scripts": "5.0.1",
@@ -27,10 +28,11 @@
     "sequelize": "^6.26.0",
     "socket.io": "^4.5.4",
     "socket.io-client": "^4.5.4",
+    "spotify-web-api-js": "^1.5.2",
     "web-vitals": "^2.1.0"
   },
   "scripts": {
-    "start": "react-scripts start",
+    "start": "HTTPS=true react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test --transformIgnorePatterns",
     "eject": "react-scripts eject"
