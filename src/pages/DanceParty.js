@@ -12,6 +12,7 @@ let spotify = new SpotifyWebApi();
 
 function DanceParty(props) {
     const [remoteProgressMs, setRemoteProgressMs] = useState();
+    const [danceModeEnabled, setDanceModeEnabled] = useState(false);
     const [display, setDisplay] = useState(
         props.currentSpotifyPlayback ? (
             <SpotifyPlayerSmall
@@ -45,6 +46,7 @@ function DanceParty(props) {
                     analysisData,
                     lagTimeMs
                 );
+                setDanceModeEnabled(true);
             });
         });
     }
@@ -101,6 +103,10 @@ function DanceParty(props) {
             checkPlaybackChanged,
             3000
         );
+
+        if (danceModeEnabled) {
+            startDanceParty();
+        }
 
         return () => {
             clearInterval(checkRemotePlaybackInterval);
