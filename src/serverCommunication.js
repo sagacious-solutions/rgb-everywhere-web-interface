@@ -122,8 +122,6 @@ export default function useServerCommunication() {
         postUpdatePattern,
         getPatternsList,
         getDataFromUrl,
-        postSpotifyVisualizeData,
-        postSpotifyDynamicDisplay,
         postSpotifyDualBeats,
     };
 }
