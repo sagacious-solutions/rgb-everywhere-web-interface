@@ -39,13 +39,8 @@ export default function useServerCommunication() {
         return axios.post(DB_URL + "/deletePattern/", { pattern });
     }
 
-    function postSpotifyVisualizeData(
-        device,
-        trackProgress,
-        trackData,
-        lagTimeMs
-    ) {
-        return axios.post(`${deviceUrl(device)}/spotifyVisualize/`, {
+    function postSpotifyDualBeats(device, trackProgress, trackData, lagTimeMs) {
+        return axios.post(`${deviceUrl(device)}/spotifyVisualizeDualBeat/`, {
             track_progress: trackProgress,
             track_data: trackData,
             lag_time_ms: lagTimeMs,
@@ -128,5 +123,7 @@ export default function useServerCommunication() {
         getPatternsList,
         getDataFromUrl,
         postSpotifyVisualizeData,
+        postSpotifyDynamicDisplay,
+        postSpotifyDualBeats,
     };
 }
