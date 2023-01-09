@@ -4,6 +4,9 @@ import SpotifyWebApi from "spotify-web-api-js";
 let spotify = new SpotifyWebApi();
 
 export default function useSpotifyData() {
+    const timeBetweenCheckRemotePlaybackChangeMs = 5000;
+    const oneSecondInMs = 1000;
+    const thresholdTimeChangeSecs = 3;
     const [playbackState, setPlaybackState] = useState({
         currentTrackId: null,
         durationMs: null,
@@ -27,11 +30,11 @@ export default function useSpotifyData() {
                 setPlaybackState({
                     ...playbackState,
                     progressSecs: Math.floor(
-                        playbackState.progressSecs + timeDiff / 1000
+                        playbackState.progressSecs + timeDiff / oneSecondInMs
                     ),
                     progressMs: playbackState.progressMs + timeDiff,
                 });
-            }, 1000);
+            }, oneSecondInMs);
 
             return () => clearInterval(interval);
         }
@@ -41,37 +44,60 @@ export default function useSpotifyData() {
     useEffect(() => {
         const monitorForPlaybackChangeInterval = setInterval(() => {
             checkPlaybackChanged();
-        }, 5000);
+        }, timeBetweenCheckRemotePlaybackChangeMs);
 
         return () => clearInterval(monitorForPlaybackChangeInterval);
     }, []);
 
+    /**
+     * Authorizes spotify API to retrieve data
+     * @param {string} accessToken
+     */
     function authorize(accessToken) {
         spotify.setAccessToken(accessToken);
     }
 
+    /**
+     * Makes a call to Spotify API for current play back state and returns the promise
+     * @returns Promise of Spotify API Results
+     */
     function getRemotePlaybackState() {
         return spotify.getMyCurrentPlaybackState();
     }
 
+    /**
+     * Fetches the remote playback state. If the song has changed or track progress
+     * no longer matches the local track progress, updates the playback state
+     */
     function checkPlaybackChanged() {
         getRemotePlaybackState().then((res) => {
             const remoteProgressMs = res.progress_ms;
             let progressMs = playbackState.progressMs;
             if (
                 res.item.id !== playbackState.currentTrackId ||
-                progressMs - 3 > remoteProgressMs > progressMs + 3
+                progressMs - thresholdTimeChangeSecs >
+                    remoteProgressMs >
+                    progressMs + thresholdTimeChangeSecs
             ) {
                 updateStateFromResponse(res);
             }
         });
     }
 
+    /**
+     * Updates the playback state object from a response object from spotify API
+     * @param {response} res Response from rquest to API
+     */
     function updateStateFromResponse(res) {
         const remoteProgressMs = res.progress_ms;
         let progressMs = playbackState.progressMs;
 
-        if (!progressMs || progressMs - 3 > remoteProgressMs > progressMs + 3) {
+        if (
+            !progressMs ||
+            progressMs - thresholdTimeChangeSecs >
+                remoteProgressMs >
+                progressMs + thresholdTimeChangeSecs
+        ) {
             progressMs = remoteProgressMs;
         }
         setPlaybackState({
@@ -80,9 +106,9 @@ export default function useSpotifyData() {
             currentTrackId: res.item.id,
             albumCoverUrl: res.item.album.images[0].url,
             durationMs: res.item.duration_ms,
-            durationSecs: Math.floor(res.item.duration_ms / 1000),
+            durationSecs: Math.floor(res.item.duration_ms / oneSecondInMs),
             progressMs: progressMs,
-            progressSecs: Math.floor(progressMs / 1000),
+            progressSecs: Math.floor(progressMs / oneSecondInMs),
             albumCoverUrl: res.item.album.images[0].url,
             artists: res.item.artists,
             trackName: res.item.name,
@@ -91,24 +117,21 @@ export default function useSpotifyData() {
         });
     }
 
+    /**
+     * Updates the current playbackState object
+     */
     function updatePlaybackState() {
-        return getRemotePlaybackState().then((res) => {
+        getRemotePlaybackState().then((res) => {
             updateStateFromResponse(res);
         });
     }
 
-    function updateAudioAnalysis() {
-        spotify.getMyCurrentPlaybackState().then((res) => {
-            spotify
-                .getAudioAnalysisForTrack(playbackState.currentTrackId)
-                .then((res) => {
-                    setAudioAnalysis(res);
-                });
-        });
-    }
-
+    /**
+     * Gets the Audio Analysis data from the spotify api for the current track
+     * @returns Promise of API Call for data
+     */
     function getAudioAnalysis() {
-        return audioAnalysis;
+        return spotify.getAudioAnalysisForTrack(playbackState.currentTrackId);
     }
 
     return {
