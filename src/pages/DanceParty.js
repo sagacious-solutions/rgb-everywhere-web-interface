@@ -17,47 +17,19 @@ function DanceParty(props) {
     const [authToken, setAuthToken] = useState(null);
     const { postSpotifyDualBeats } = useServerCommunication();
 
-    function startDualBeatOnDevice(device) {
-        const start_ms = new Date().getTime();
-        updatePlaybackState();
-        const analysisData = getAudioAnalysis();
-        const finish_ms = new Date().getTime();
-        const lagTimeMs = finish_ms - start_ms;
-
-        postSpotifyDualBeats(
-            device ? device.ip_address : props.currentDevice,
-            playbackState.progressMs,
-            analysisData,
-            lagTimeMs
-        );
-    }
-
     function startDualBeatOnCurrentDevice() {
         const start_ms = new Date().getTime();
-        const analysisData = getAudioAnalysis();
-        const finish_ms = new Date().getTime();
-        const lagTimeMs = finish_ms - start_ms;
-
-        postSpotifyDualBeats(
-            props.currentDevice,
-            playbackState.progressMs,
-            analysisData,
-            lagTimeMs
-        );
+        getAudioAnalysis().then((res) => {
+            const finish_ms = new Date().getTime();
+            const lagTimeMs = finish_ms - start_ms;
+            postSpotifyDualBeats(
+                props.currentDevice,
+                playbackState.progressMs,
+                res,
+                lagTimeMs
+            );
+        });
     }
-
-    function startDualBeatOnAllDevices() {
-        props.devices.forEach(startDualBeatOnDevice);
-    }
-
-    // function checkPlaybackChanged() {
-    //     spotify.getMyCurrentPlaybackState().then((res) => {
-    //         setRemoteProgressMs(res.progress_ms);
-    //         if (res.item.id !== props.currentSpotifyPlayback.item.id) {
-    //             props.setCurrentSpotifyPlayback(res);
-    //         }
-    //     });
-    // }
 
     function displayNowPlaying() {
         return (
@@ -75,20 +47,6 @@ function DanceParty(props) {
                     }}
                 >
                     Start Dual Beats Visualization On Current Device
-                </Button>
-                <Button
-                    style={{
-                        marginLeft: "5%",
-                        marginTop: "20%",
-                        background: "blue",
-                        color: "white",
-                    }}
-                    onClick={() => {
-                        setDanceMode("DualBeatAllDevices");
-                        startDualBeatOnAllDevices();
-                    }}
-                >
-                    Start Dual Beats Visualization On All Devices
                 </Button>
             </div>
         );
