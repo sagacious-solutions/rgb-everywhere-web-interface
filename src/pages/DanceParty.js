@@ -1,89 +1,108 @@
 import React, { useState, useEffect } from "react";
 import SpotifyLogin from "./components/SpotifyLogin";
 import SpotifyNowPlaying from "./components/SpotifyNowPlaying";
-import SpotifyWebApi from "spotify-web-api-js";
 import { useCookies } from "react-cookie";
 import useServerCommunication from "../serverCommunication";
-import spotifyPlaybackData from "../spotifyPlaybackData";
-import SpotifyPlayerSmall from "./components/SpotifyPlayerSmall";
+import useSpotifyData from "../hooks/useSpotifyData";
 import { Button } from "@material-ui/core";
 
-let spotify = new SpotifyWebApi();
-
 function DanceParty(props) {
-    const [remoteProgressMs, setRemoteProgressMs] = useState();
-    const [danceModeEnabled, setDanceModeEnabled] = useState(false);
+    const { authorize, playbackState, updatePlaybackState, getAudioAnalysis } =
+        useSpotifyData();
     const [display, setDisplay] = useState(
-        props.currentSpotifyPlayback ? (
-            <SpotifyPlayerSmall
-                currentPlayback={props.currentSpotifyPlayback}
-                updatePlaybackState={updatePlaybackState}
-                remoteProgressMs={remoteProgressMs}
-                pause={() => {
-                    spotify.pause();
-                }}
-            />
-        ) : (
-            <SpotifyLogin />
-        )
+        playbackState.currentTrackId ? displayNowPlaying() : <SpotifyLogin />
     );
-    const [cookies, setCookie, removeCookie] = useCookies();
+    const [danceMode, setDanceMode] = useState(null);
+    const [cookies, _setCookie, removeCookie] = useCookies();
     const [authToken, setAuthToken] = useState(null);
-    const { postSpotifyVisualizeData } = useServerCommunication();
+    const { postSpotifyDualBeats } = useServerCommunication();
 
-    function startDanceParty() {
+    function startDualBeatOnDevice(device) {
         const start_ms = new Date().getTime();
+        updatePlaybackState();
+        const analysisData = getAudioAnalysis();
+        const finish_ms = new Date().getTime();
+        const lagTimeMs = finish_ms - start_ms;
 
-        spotify.getMyCurrentPlaybackState().then((res) => {
-            const trackProgress = res.progress_ms;
-            spotify.getAudioAnalysisForTrack(res.item.id).then((res) => {
-                const analysisData = res;
-                const end = new Date();
-                const lagTimeMs = end.getTime() - start_ms;
-                postSpotifyVisualizeData(
-                    props.currentDevice,
-                    trackProgress,
-                    analysisData,
-                    lagTimeMs
-                );
-                setDanceModeEnabled(true);
-            });
-        });
-    }
-
-    function updatePlaybackState() {
-        spotify.getMyCurrentPlaybackState().then(
-            (res) => {
-                props.setCurrentSpotifyPlayback(res);
-            },
-            (err) => {}
+        postSpotifyDualBeats(
+            device ? device.ip_address : props.currentDevice,
+            playbackState.progressMs,
+            analysisData,
+            lagTimeMs
         );
     }
 
-    function checkPlaybackChanged() {
-        spotify.getMyCurrentPlaybackState().then((res) => {
-            setRemoteProgressMs(res.progress_ms);
-            if (res.item.id !== props.currentSpotifyPlayback.item.id) {
-                console.log("Updating playback state");
-                props.setCurrentSpotifyPlayback(res);
-            }
-        });
+    function startDualBeatOnCurrentDevice() {
+        const start_ms = new Date().getTime();
+        const analysisData = getAudioAnalysis();
+        const finish_ms = new Date().getTime();
+        const lagTimeMs = finish_ms - start_ms;
+
+        postSpotifyDualBeats(
+            props.currentDevice,
+            playbackState.progressMs,
+            analysisData,
+            lagTimeMs
+        );
+    }
+
+    function startDualBeatOnAllDevices() {
+        props.devices.forEach(startDualBeatOnDevice);
+    }
+
+    // function checkPlaybackChanged() {
+    //     spotify.getMyCurrentPlaybackState().then((res) => {
+    //         setRemoteProgressMs(res.progress_ms);
+    //         if (res.item.id !== props.currentSpotifyPlayback.item.id) {
+    //             props.setCurrentSpotifyPlayback(res);
+    //         }
+    //     });
+    // }
+
+    function displayNowPlaying() {
+        return (
+            <div>
+                <SpotifyNowPlaying playbackState={playbackState} />
+                <Button
+                    style={{
+                        marginTop: "20%",
+                        background: "blue",
+                        color: "white",
+                    }}
+                    onClick={() => {
+                        startDualBeatOnCurrentDevice();
+                        setDanceMode("DualBeatCurrentDevice");
+                    }}
+                >
+                    Start Dual Beats Visualization On Current Device
+                </Button>
+                <Button
+                    style={{
+                        marginLeft: "5%",
+                        marginTop: "20%",
+                        background: "blue",
+                        color: "white",
+                    }}
+                    onClick={() => {
+                        setDanceMode("DualBeatAllDevices");
+                        startDualBeatOnAllDevices();
+                    }}
+                >
+                    Start Dual Beats Visualization On All Devices
+                </Button>
+            </div>
+        );
     }
 
     useEffect(() => {
-        let currentTrackId = null;
-        let trackProgress = null;
-        const start = new Date();
-        let start_ms = start.getTime();
-
         if (props.spotifyAuthToken) {
-            spotify.setAccessToken(props.spotifyAuthToken);
+            authorize(props.spotifyAuthToken);
             updatePlaybackState();
             setAuthToken(props.spotifyAuthToken);
         }
 
         if (cookies.spotifyAuthToken) {
-            spotify.setAccessToken(cookies.spotifyAuthToken);
+            authorize(props.spotifyAuthToken);
             if (!authToken) {
                 updatePlaybackState();
                 setAuthToken(cookies.spotifyAuthToken);
@@ -92,46 +111,15 @@ function DanceParty(props) {
                 removeCookie("spotifyAuthToken");
             }, 1000);
         }
-
-        // .then(() => {
-
-        // })
     }, [authToken]);
 
     useEffect(() => {
-        const checkRemotePlaybackInterval = setInterval(
-            checkPlaybackChanged,
-            3000
-        );
-
-        if (danceModeEnabled) {
-            startDanceParty();
+        if (playbackState.currentTrackId) {
+            setDisplay(displayNowPlaying());
         }
+    }, [playbackState]);
 
-        return () => {
-            clearInterval(checkRemotePlaybackInterval);
-        };
-    }, [props.currentSpotifyPlayback]);
-
-    useEffect(() => {
-        if (props.currentSpotifyPlayback) {
-            setDisplay(
-                <SpotifyPlayerSmall
-                    currentPlayback={props.currentSpotifyPlayback}
-                    updatePlaybackState={updatePlaybackState}
-                    remoteProgressMs={remoteProgressMs}
-                    pause={() => spotify.pause()}
-                />
-            );
-        }
-    }, [props.currentSpotifyPlayback, remoteProgressMs]);
-
-    return (
-        <div>
-            {display}
-            <Button onClick={startDanceParty}>Start the party</Button>
-        </div>
-    );
+    return <div>{display}</div>;
 }
 
 export default DanceParty;
