@@ -52,6 +52,12 @@ function DanceParty(props) {
         );
     }
 
+    function restartActiveVisualization() {
+        if (danceMode == "DualBeatCurrentDevice") {
+            startDualBeatOnCurrentDevice();
+        }
+    }
+
     useEffect(() => {
         if (props.spotifyAuthToken) {
             authorize(props.spotifyAuthToken);
@@ -76,6 +82,12 @@ function DanceParty(props) {
             setDisplay(displayNowPlaying());
         }
     }, [playbackState]);
+
+    useEffect(() => {
+        if (playbackState.currentTrackId && danceMode) {
+            restartActiveVisualization();
+        }
+    }, [playbackState.currentTrackId]);
 
     return <div>{display}</div>;
 }

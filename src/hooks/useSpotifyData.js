@@ -4,9 +4,9 @@ import SpotifyWebApi from "spotify-web-api-js";
 let spotify = new SpotifyWebApi();
 
 export default function useSpotifyData() {
-    const timeBetweenCheckRemotePlaybackChangeMs = 5000;
+    const checkRemoteStateIntervalSecs = 5;
     const oneSecondInMs = 1000;
-    const thresholdTimeChangeSecs = 3;
+    const thresholdTimeChangeMs = 3000;
     const [playbackState, setPlaybackState] = useState({
         currentTrackId: null,
         durationMs: null,
@@ -20,7 +20,6 @@ export default function useSpotifyData() {
         albumName: null,
     });
     const [audioAnalysis, setAudioAnalysis] = useState(null);
-
     // Handle tracking song progress
     useEffect(() => {
         if (playbackState.currentTrackId) {
@@ -36,18 +35,21 @@ export default function useSpotifyData() {
                 });
             }, oneSecondInMs);
 
-            return () => clearInterval(interval);
+            return () => {
+                clearInterval(interval);
+            };
         }
     }, [playbackState]);
 
     // Monitor for change of song or seek to positions
     useEffect(() => {
-        const monitorForPlaybackChangeInterval = setInterval(() => {
+        if (
+            playbackState.currentTrackId &&
+            playbackState.progressSecs % checkRemoteStateIntervalSecs == 0
+        ) {
             checkPlaybackChanged();
-        }, timeBetweenCheckRemotePlaybackChangeMs);
-
-        return () => clearInterval(monitorForPlaybackChangeInterval);
-    }, []);
+        }
+    }, [playbackState.progressSecs]);
 
     /**
      * Authorizes spotify API to retrieve data
@@ -71,13 +73,12 @@ export default function useSpotifyData() {
      */
     function checkPlaybackChanged() {
         getRemotePlaybackState().then((res) => {
-            const remoteProgressMs = res.progress_ms;
-            let progressMs = playbackState.progressMs;
             if (
                 res.item.id !== playbackState.currentTrackId ||
-                progressMs - thresholdTimeChangeSecs >
-                    remoteProgressMs >
-                    progressMs + thresholdTimeChangeSecs
+                res.progress_ms <
+                    playbackState.progressMs - thresholdTimeChangeMs ||
+                res.progress_ms >
+                    playbackState.progressMs + thresholdTimeChangeMs
             ) {
                 updateStateFromResponse(res);
             }
@@ -90,16 +91,7 @@ export default function useSpotifyData() {
      */
     function updateStateFromResponse(res) {
         const remoteProgressMs = res.progress_ms;
-        let progressMs = playbackState.progressMs;
 
-        if (
-            !progressMs ||
-            progressMs - thresholdTimeChangeSecs >
-                remoteProgressMs >
-                progressMs + thresholdTimeChangeSecs
-        ) {
-            progressMs = remoteProgressMs;
-        }
         setPlaybackState({
             ...playbackState,
             remoteProgressMs: res.progress_ms,
@@ -107,8 +99,8 @@ export default function useSpotifyData() {
             albumCoverUrl: res.item.album.images[0].url,
             durationMs: res.item.duration_ms,
             durationSecs: Math.floor(res.item.duration_ms / oneSecondInMs),
-            progressMs: progressMs,
-            progressSecs: Math.floor(progressMs / oneSecondInMs),
+            progressMs: remoteProgressMs,
+            progressSecs: Math.floor(remoteProgressMs / oneSecondInMs),
             albumCoverUrl: res.item.album.images[0].url,
             artists: res.item.artists,
             trackName: res.item.name,
@@ -140,6 +132,6 @@ export default function useSpotifyData() {
         audioAnalysis,
         updatePlaybackState,
         getAudioAnalysis,
-        checkPlaybackChanged,
+        // checkPlaybackChanged,
     };
 }
