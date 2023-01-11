@@ -3,6 +3,10 @@ import axios from "axios";
 const DB_URL = process.env.REACT_APP_DB_URL;
 
 export default function useServerCommunication() {
+    const deviceUrl = (ip) => {
+        return `https://${ip}:5000`;
+    };
+
     function sayHello(ip) {
         return axios.get("http://" + ip + ":5000/bonjour/");
     }
@@ -35,8 +39,16 @@ export default function useServerCommunication() {
         return axios.post(DB_URL + "/deletePattern/", { pattern });
     }
 
-    function postDeviceConfig(ip, color_mode, led_count) {
-        return axios.post("http://" + ip + ":5000/configDevice/", {
+    function postSpotifyDualBeats(device, trackProgress, trackData, lagTimeMs) {
+        return axios.post(`${deviceUrl(device)}/spotifyVisualizeDualBeat/`, {
+            track_progress: trackProgress,
+            track_data: trackData,
+            lag_time_ms: lagTimeMs,
+        });
+    }
+
+    function postDeviceConfig(device, color_mode, led_count) {
+        return axios.post(`${deviceUrl(device)}/configDevice/`, {
             color_mode: color_mode,
             led_count: led_count,
         });
@@ -44,7 +56,7 @@ export default function useServerCommunication() {
 
     function postSetSolidPreset(color, device) {
         axios
-            .post(`http://${device}:5000/setSolidPreset/`, {
+            .post(`${deviceUrl(device)}/setSolidPreset/`, {
                 color: color,
             })
             .catch(function (error) {
@@ -54,7 +66,7 @@ export default function useServerCommunication() {
 
     function postColorRequest(color, device) {
         return axios
-            .post(`http://${device}:5000/setRgbColor/`, {
+            .post(`${deviceUrl(device)}/setRgbColor/`, {
                 color: color,
             })
             .catch(function (error) {
@@ -64,7 +76,7 @@ export default function useServerCommunication() {
 
     function postCustomPatternRequest(pattern, device) {
         axios
-            .post(`http://${device}:5000/setCustomPattern/`, {
+            .post(`${deviceUrl(device)}/setCustomPattern/`, {
                 pattern: pattern,
             })
             .catch(function (error) {
@@ -74,8 +86,7 @@ export default function useServerCommunication() {
 
     function postAninmationRequest(pattern, device) {
         axios
-            // .post(BOOKSHELF_URL + "/setPattern/", {
-            .post(`http://${device}:5000/setPattern/`, {
+            .post(`${deviceUrl(device)}/setPattern/`, {
                 pattern: pattern,
             })
             .catch(function (error) {
@@ -84,10 +95,14 @@ export default function useServerCommunication() {
     }
     function postTurnOffRequest(device) {
         axios
-            .post(`http://${device}:5000/turnOffLights/`, {})
+            .post(`${deviceUrl(device)}/turnOffLights/`, {})
             .catch(function (error) {
                 console.log(error);
             });
+    }
+
+    function getDataFromUrl(url) {
+        return axios.get(url);
     }
 
     return {
@@ -106,5 +121,7 @@ export default function useServerCommunication() {
         postDeletePattern,
         postUpdatePattern,
         getPatternsList,
+        getDataFromUrl,
+        postSpotifyDualBeats,
     };
 }

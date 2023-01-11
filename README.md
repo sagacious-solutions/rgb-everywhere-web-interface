@@ -18,6 +18,7 @@ Bunny for scale.
  - Dotenv
  - Material UI
  - React-Color
+ - spotify-web-api-js 
  - Python
  - Flask
  - SQLAlchemy
@@ -28,6 +29,12 @@ Bunny for scale.
  - 2 Raspberry Pi Zero 2's
  - Ender 3 Pro V2 for Printing Screen Mount
  - Fusion 360 for Parts Design
+
+# Demo of Visualizer
+
+<img  src="./docs/visualizer_screenshot.png" width="60%" />
+
+[<img src="https://i.ytimg.com/vi/9jklt9LoFyM/maxresdefault.jpg" width="75%">](https://www.youtube.com/shorts/9jklt9LoFyM "Click for Spotify Visualizer Demo")
 
 # Easily manage available display devices
 <p align="center">

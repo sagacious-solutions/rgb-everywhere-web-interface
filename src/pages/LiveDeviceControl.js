@@ -36,7 +36,7 @@ function LiveDeviceControl(props) {
     };
 
     const connectToSocket = () => {
-        socket = io(`http://${props.currentDevice}:5000/`, {
+        socket = io(`https://${props.currentDevice}:5000/`, {
             reconnectionAttempts: 1,
         });
 
