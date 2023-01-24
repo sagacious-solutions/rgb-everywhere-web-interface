@@ -8,7 +8,7 @@ export default function useServerCommunication() {
     };
 
     function sayHello(ip) {
-        return axios.get("http://" + ip + ":5000/bonjour/");
+        return axios.get("https://" + ip + ":5000/bonjour/");
     }
 
     function getDeviceList() {
