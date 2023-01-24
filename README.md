@@ -34,8 +34,6 @@ Bunny for scale.
 
 <img  src="./docs/visualizer_screenshot.png" width="60%" />
 
-[<img src="https://i.ytimg.com/vi/8BkivopaWjA/maxresdefault.jpg" width="75%">](https://www.youtube.com/shorts/8BkivopaWjA "Click for Epic Dance Party!!!")
-
 [<img src="https://i.ytimg.com/vi/9jklt9LoFyM/maxresdefault.jpg" width="75%">](https://www.youtube.com/shorts/9jklt9LoFyM "Click for Spotify Visualizer Demo")
 
 # Easily manage available display devices
@@ -96,3 +94,23 @@ My preference for running servers is to Daemonize them with <a href="https://pm2
 3) pm2 start "yarn start" --name "xmas-tree"
 4) pm2 save
 
+## Setup Chromium to start in Kiosk mode with interface
+
+```
+sudo nano /etc/xdg/lxsession/LXDE-pi/autostart
+```
+
+Then enter the following data into the file and save.
+
+```
+@lxpanel --profile LXDE-pi
+@pcmanfm --desktop --profile LXDE-pi
+
+@xset s off
+@xset -dpms
+@xset s noblank
+
+@chromium-browser --kiosk https://localhost:3000
+```
+
+Credit to to <a href="https://blog.deepgram.com/chromium-kiosk-pi/">https://blog.deepgram.com/chromium-kiosk-pi/</a> for the setup instructions for kiosk mode.
