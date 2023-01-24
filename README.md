@@ -33,7 +33,7 @@ Bunny for scale.
 # Demo of Visualizer
 
 <img  src="./docs/visualizer_screenshot.png" width="60%" />
-
+[<img src="https://i.ytimg.com/vi/8BkivopaWjA/maxresdefault.jpg" width="75%">](https://www.youtube.com/shorts/8BkivopaWjA "Click for Epic Dance Party!!!")
 [<img src="https://i.ytimg.com/vi/9jklt9LoFyM/maxresdefault.jpg" width="75%">](https://www.youtube.com/shorts/9jklt9LoFyM "Click for Spotify Visualizer Demo")
 
 # Easily manage available display devices
